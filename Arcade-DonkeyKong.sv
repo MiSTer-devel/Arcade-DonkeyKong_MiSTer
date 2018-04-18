@@ -94,7 +94,7 @@ localparam CONF_STR = {
 	"-;",
 	"T6,Reset;",
 	"J,Jump,Start 1P,Start 2P;",
-	"V,v2.00.",`BUILD_DATE
+	"V,v1.10.",`BUILD_DATE
 };
 
 ////////////////////   CLOCKS   ///////////////////
@@ -231,11 +231,11 @@ assign AUDIO_L = {audio,audio};
 assign AUDIO_R = AUDIO_L;
 assign AUDIO_S = 0;
 
-assign hblank = hbl[1];
+assign hblank = hbl[8];
 
 wire clk_pix;
 wire hbl0;
-reg [2:0] hbl;
+reg [8:0] hbl;
 always @(posedge clk_sys) begin
 	reg old_pix;
 	old_pix <= clk_pix;

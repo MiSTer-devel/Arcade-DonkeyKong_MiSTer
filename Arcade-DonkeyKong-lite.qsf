@@ -51,7 +51,7 @@ set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
 set_global_assignment -name FINAL_PLACEMENT_OPTIMIZATION ALWAYS
 set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
-set_global_assignment -name OPTIMIZATION_MODE BALANCED
+set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
 set_global_assignment -name SEED 1
 
 #============================================================
@@ -387,7 +387,9 @@ set_global_assignment -name VHDL_FILE src/t80asd_ip/T80_MCode.vhd
 set_global_assignment -name VHDL_FILE src/t80asd_ip/T80_Reg.vhd
 set_global_assignment -name VHDL_FILE src/t80asd_ip/T80.vhd
 set_global_assignment -name VHDL_FILE src/t80asd_ip/T80as.vhd
-set_global_assignment -name VERILOG_FILE src/dkong_top.v
+set_global_assignment -name VERILOG_FILE src/z80ip_t.v
+set_global_assignment -name VERILOG_FILE src/i8035ip.v
+set_global_assignment -name VERILOG_FILE src/dkong_bram.v
 set_global_assignment -name VERILOG_FILE src/dkong_adec.v
 set_global_assignment -name VERILOG_FILE src/dkong_inport.v
 set_global_assignment -name VERILOG_FILE src/dkong_data_watch.v
@@ -398,16 +400,7 @@ set_global_assignment -name VERILOG_FILE src/dkong_col_pal.v
 set_global_assignment -name VERILOG_FILE src/dkong_sound.v
 set_global_assignment -name VERILOG_FILE src/dkong_wav_sound.v
 set_global_assignment -name VERILOG_FILE src/dkong_logic.v
-set_global_assignment -name VERILOG_FILE src/i8035ip.v
-set_global_assignment -name VERILOG_FILE src/z80ip_t.v
-set_global_assignment -name VERILOG_FILE src/cyclone/dkong_bram_if_altera.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_64_8.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_256_4.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_512_8_8.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_512_8_256_16.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_1024_8.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_1024_8_8.v
-set_global_assignment -name VERILOG_FILE src/cyclone/cyc_ram_2048_8.v
+set_global_assignment -name VERILOG_FILE src/dkong_top.v
 set_global_assignment -name VHDL_FILE dpram.vhd
 set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-DonkeyKong.sv"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

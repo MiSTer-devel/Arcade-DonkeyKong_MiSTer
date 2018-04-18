@@ -22,9 +22,6 @@
 //================================================================================
 //--------------------------------------------------------------------------------
 
-//-- include the sound interface module ------------------------------------------
-	`define SOUND_USE
-
 //-- DIP SWITCH INITIALIZATION ---------------------------------------------------
 //	`define DIP_LIVES  2'b00  //  3    default
 //	`define DIP_LIVES  2'b01  //  4
@@ -168,10 +165,8 @@ assign ZDO = WO_D;
 //========   EXT ROM & RAM Interface  ============================================
 wire   [15:0]W_ROM_AB = W_CPU_A ;
 
-`ifdef SOUND_USE
 wire  [18:0]WAV_ROM_A;
 reg   [7:0]WAV_ROM_DO;
-`endif
 wire  [11:0]VID_ROM_A;
 wire  [11:0]OBJ_ROM_A;
 
@@ -226,62 +221,70 @@ begin
     OBJ_ROM1_DO <= 0 ;OBJ_ROM2_DO <= 0;
     OBJ_ROM3_DO <= 0 ;OBJ_ROM4_DO <= 0;
     WB_ROM_DO <= 0;
-    `ifdef SOUND_USE
     WAV_ROM_DO <= 0;
-    `endif  
   end else begin
     clk_d[0] <= W_H_CNT[1] & W_H_CNT[2] & W_H_CNT[3];
     clk_d[1] <= clk_d[0];
     phase <= (~clk_d[1] & clk_d[0]) ? 0 : phase+1'd1;
     case(phase)
        0: begin
-         `ifdef SOUND_USE
-          ROM_A       <= WAV_ROM_A ;               //  WAVE SOUND ADDR
-         `endif
-          WB_ROM_DO   <= ROM_D ;
+				 ROM_A      <= WAV_ROM_A ;               //  WAVE SOUND ADDR
+				 WB_ROM_DO  <= ROM_D ;
           end
-          `ifdef SOUND_USE
-       1: WAV_ROM_DO  <= ROM_D ;
-          `endif
-       2: ROM_A       <= {3'h0,W_ROM_AB};
+
+       1: WAV_ROM_DO  	<= ROM_D ;
+
+       2: ROM_A       	<= {3'h0,W_ROM_AB};
+
        3: begin
-          ROM_A       <= {3'h0,4'h6,VID_ROM_A} ;   //  VID_ROM1  ADDR = 6xxxH
-          WB_ROM_DO   <= ROM_D;
+				ROM_A       <= {3'h0,4'h6,VID_ROM_A} ;   //  VID_ROM1  ADDR = 6xxxH
+				WB_ROM_DO   <= ROM_D;
           end
-       4: begin
-          ROM_A       <= W_VC_A ;                  //  VID_ROM2  ADDR = 7xxxH
-          VID_ROM1_DO <= ROM_D ;
+
+		 4: begin
+				ROM_A       <= W_VC_A ;                  //  VID_ROM2  ADDR = 7xxxH
+				VID_ROM1_DO <= ROM_D ;
           end
-       5: begin
-          ROM_A       <= {3'h0,W_ROM_AB};
-          VID_ROM2_DO <= ROM_D ;
+
+		 5: begin
+				ROM_A       <= {3'h0,W_ROM_AB};
+				VID_ROM2_DO <= ROM_D ;
           end
-       6: WB_ROM_DO   <= ROM_D ;
-       8: ROM_A       <= {3'h0,W_ROM_AB};
+
+		 6: WB_ROM_DO   	<= ROM_D ;
+
+       8: ROM_A       	<= {3'h0,W_ROM_AB};
+
        9: begin
-          ROM_A       <= {3'h0,4'hA,OBJ_ROM_A} ;   //  OBJ_ROM1  ADDR = AxxxH
-          WB_ROM_DO   <= ROM_D ;
+				ROM_A       <= {3'h0,4'hA,OBJ_ROM_A} ;   //  OBJ_ROM1  ADDR = AxxxH
+				WB_ROM_DO   <= ROM_D ;
           end
+
       10: begin
-          ROM_A       <= {3'h0,4'hB,OBJ_ROM_A} ;   //  OBJ_ROM2  ADDR = BxxxH
-          OBJ_ROM1_DO <= ROM_D ;
+				ROM_A       <= {3'h0,4'hB,OBJ_ROM_A} ;   //  OBJ_ROM2  ADDR = BxxxH
+				OBJ_ROM1_DO <= ROM_D ;
           end
+
       11: begin
-          ROM_A       <= {3'h0,W_ROM_AB};
-          OBJ_ROM2_DO <= ROM_D ;
+				ROM_A       <= {3'h0,W_ROM_AB};
+				OBJ_ROM2_DO <= ROM_D ;
           end
+
       12: begin
-          ROM_A       <= {3'h0,4'hC,OBJ_ROM_A} ;   //  OBJ_ROM3  ADDR = CxxxH
-          WB_ROM_DO   <= ROM_D ;
+				ROM_A       <= {3'h0,4'hC,OBJ_ROM_A} ;   //  OBJ_ROM3  ADDR = CxxxH
+				WB_ROM_DO   <= ROM_D ;
           end
+
       13: begin
-          ROM_A       <= {3'h0,4'hD,OBJ_ROM_A} ;   //  OBJ_ROM4  ADDR = DxxxH
-          OBJ_ROM3_DO <= ROM_D ;
+				ROM_A       <= {3'h0,4'hD,OBJ_ROM_A} ;   //  OBJ_ROM4  ADDR = DxxxH
+				OBJ_ROM3_DO <= ROM_D ;
           end
-      14: OBJ_ROM4_DO <= ROM_D ;
+
+      14: OBJ_ROM4_DO 	<= ROM_D ;
+
       15: begin
-          ROM_A       <= {3'h0,W_ROM_AB};
-          R_AD <= R_AD==conf_cnt+1 ? R_AD : R_AD + 1'd1 ;
+				ROM_A       <= {3'h0,W_ROM_AB};
+				R_AD 			<= R_AD==conf_cnt+1 ? R_AD : R_AD + 1'd1 ;
           end
     default:;
    endcase 
@@ -543,7 +546,6 @@ assign O_VGA_V_SYNCn = W_V_SYNCn;
 
 //========   DIGTAL SOUND    =====================================================
 
-`ifdef SOUND_USE
 wire   [7:0]W_D_S_DAT;
 
 wire    [7:0]I8035_DBI;
@@ -623,7 +625,7 @@ dkong_wav_sound Analog_sound
 );
 
 //  SOUND MIXER (WAV + DIG ) -----------------------
-wire   [8:0]sound_mix = WAV_ROM_DO + W_D_S_DAT ; 
+wire   [8:0]sound_mix = {1'b0, WAV_ROM_DO} + {1'b0, W_D_S_DAT};
 reg    [8:0]dac_di;
 always@(posedge W_CLK_12288M)
 begin
@@ -635,13 +637,7 @@ begin
       dac_di <= sound_mix - 9'h080; 
 end
 
-assign O_SOUND_DAT   = dac_di[7:0];
-
-`else
-
-assign O_SOUND_DAT = 0;
-
-`endif
+assign O_SOUND_DAT = dac_di[7:0];
 
 endmodule
 
