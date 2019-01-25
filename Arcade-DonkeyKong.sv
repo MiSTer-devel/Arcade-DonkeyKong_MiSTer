@@ -92,6 +92,11 @@ localparam CONF_STR = {
 	"O2,Orientation,Vert,Horz;",
 	"O34,Scanlines(vert),No,25%,50%,75%;",
 	"-;",
+	"O89,Lives,3,4,5,6;",
+	"OAB,Bonus,7000,10000,15000,20000;",
+	"OC,Cocktail,Cocktail,Upright;",
+	"-;",
+
 	"T6,Reset;",
 	"J,Jump,Start 1P,Start 2P;",
 	"V,v1.10.",`BUILD_DATE
@@ -183,6 +188,11 @@ wire m_start1 = btn_one_player  | joy[5];
 wire m_start2 = btn_two_players | joy[6];
 wire m_coin   = m_start1 | m_start2;
 
+// https://www.arcade-museum.com/dipswitch-settings/7610.html
+//wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
+// 1 bit cocktail  - 3 bits - coins - 2 bits bonus - 2 bits lives 
+wire m_dip = { status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
+
 wire hblank, vblank;
 reg  ce_vid;
 wire hs, vs;
@@ -273,6 +283,9 @@ dkong_top dkong
 	.I_S2(~m_start2),
 	.I_C1(~m_coin),
 
+   .I_DIP(m_dip),
+
+	
 	.O_VGA_R(r),
 	.O_VGA_G(g),
 	.O_VGA_B(b),
