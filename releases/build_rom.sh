@@ -1,57 +1,57 @@
 #!/bin/bash
 
 exit_with_error() {
-  echo -e "\nERROR: ${1}\n" >&2
+  echo -e "\nERROR:\n${1}\n"
   exit 1
 }
 
 check_dependencies() {
   if [[ $OSTYPE == darwin* ]]; then
     for j in unzip md5 cat cut; do
-      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires ${j}"
+      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires\n${j}"
     done
   else
     for j in unzip md5sum cat cut; do
-      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires ${j}"
+      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires\n${j}"
     done
   fi
 }
 
 check_permissions () {
   if [ ! -w . ]; then
-    exit_with_error "Cannot write to $PWD"
+    exit_with_error "Cannot write to\n$PWD"
   fi
 }
 
 read_ini () {
-  if [ ! -f ./build_rom.ini ]; then
-    exit_with_error "Cannot find build_rom.ini file."
+  if [ ! -f ${BASEDIR}/build_rom.ini ]; then
+    exit_with_error "Missing build_rom.ini"
   else
-    source ./build_rom.ini
+    source ${BASEDIR}/build_rom.ini
   fi
 }
 
 uncompress_zip() {
-  if [ -f "${zip}" ]; then
+  if [ -f ${BASEDIR}/${zip} ]; then
     tmpdir=tmp.`date +%Y%m%d%H%M%S%s`
-    unzip -d ${tmpdir}/ ${zip}
+    unzip -qq -d ${BASEDIR}/${tmpdir}/ ${BASEDIR}/${zip}
     if [ $? != 0 ] ; then
-      rm -rf $tmpdir
-      exit_with_error "Something went wrong when extracting ${zip}"
+      rm -rf ${BASEDIR}/$tmpdir
+      exit_with_error "Something went wrong\nwhen extracting\n${zip}"
     fi
   else
-    exit_with_error "Cannot find ${zip} file."
+    exit_with_error "Cannot find ${zip}"
   fi
 }
 
 generate_rom() {
   for i in "${ifiles[@]}"; do
       # ensure provided zip contains required files
-      if [ ! -f "${tmpdir}/${i}" ]; then
-	rm -rf $tmpdir
-        exit_with_error "Provided ${zip} is missing required file: ${i}"
+      if [ ! -f "${BASEDIR}/${tmpdir}/${i}" ]; then
+        rm -rf ${BASEDIR}/$tmpdir
+        exit_with_error "Provided ${zip}\nis missing required file:\n\n${i}"
       else
-        cat ${tmpdir}/${i} >> ${tmpdir}/${ofile}
+        cat ${BASEDIR}/${tmpdir}/${i} >> ${BASEDIR}/${tmpdir}/${ofile}
      fi
   done
 }
@@ -59,23 +59,27 @@ generate_rom() {
 validate_rom() {
 
   if [[ $OSTYPE == darwin* ]]; then
-    ofileMd5sumCurrent=$(md5 -r ${tmpdir}/${ofile}|cut -f 1 -d " ")
+    ofileMd5sumCurrent=$(md5 -r ${BASEDIR}/${tmpdir}/${ofile}|cut -f 1 -d " ")
   else
-    ofileMd5sumCurrent=$(md5sum ${tmpdir}/${ofile}|cut -f 1 -d " ")
+    ofileMd5sumCurrent=$(md5sum ${BASEDIR}/${tmpdir}/${ofile}|cut -f 1 -d " ")
   fi
 
   if [[ "${ofileMd5sumValid}" != "${ofileMd5sumCurrent}" ]]; then
-    echo -e "\nExpected ${ofile} checksum:\t${ofileMd5sumValid}"
-    echo -e "Actual ${ofile} checksum:\t${ofileMd5sumCurrent}"
-    mv ${tmpdir}/${ofile} .
-    rm -rf $tmpdir
-    exit_with_error "Generated ${ofile} is invalid. This is more likely due to incorrect ${zip} content."
+    echo -e "\nExpected checksum:\n${ofileMd5sumValid}"
+    echo -e "Actual checksum:\n${ofileMd5sumCurrent}"
+    mv ${BASEDIR}/${tmpdir}/${ofile} .
+    rm -rf ${BASEDIR}/$tmpdir
+    exit_with_error "Generated ${ofile}\nis invalid.\nThis is more likely\ndue to incorrect\n${zip} content."
   else
-    mv ${tmpdir}/${ofile} .
-    rm -rf $tmpdir
-    echo -e "\nChecksum verification passed for ${ofile}\nCopy the ${ofile} file into root of SD card along with the rbf file.\n"
+    mv ${BASEDIR}/${tmpdir}/${ofile} ${BASEDIR}/.
+    rm -rf ${BASEDIR}/$tmpdir
+    echo -e "\nChecksum verification passed\n\nCopy the ${ofile}\ninto root of SD card\nalong with the rbf file.\n"
   fi
 }
+
+BASEDIR=$(dirname "$0")
+
+echo "Generating ROM ..."
 
 ## verify dependencies
 check_dependencies
