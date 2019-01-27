@@ -39,9 +39,9 @@ hashes and contained files there.
 To generate the ROM using Windows:
 1) Copy the zip into "releases" directory
 2) Execute bat file - it will show the name of zip file containing required files.
-4) Put required zip into the same directory and execute the bat again.
-5) If everything will go without errors or warnings, then you will get the a.*.rom file.
-6) Copy generated a.*.rom into root of SD card along with the Arcade-*.rbf file
+3) Put required zip into the same directory and execute the bat again.
+4) If everything will go without errors or warnings, then you will get the a.*.rom file.
+5) Copy generated a.*.rom into root of SD card along with the Arcade-*.rbf file
 
 To generate the ROM using Linux/MacOS:
 1) Copy the zip into "releases" directory
