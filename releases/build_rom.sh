@@ -1,19 +1,20 @@
 #!/bin/bash
 
-zip=dkong.zip
-ifiles=(c_5et_g.bin c_5ct_g.bin c_5bt_g.bin c_5at_g.bin c_5at_g.bin c_5at_g.bin v_3pt.bin v_3pt.bin v_5h_b.bin v_5h_b.bin c_5at_g.bin c_5at_g.bin l_4m_b.bin l_4m_b.bin l_4n_b.bin l_4n_b.bin l_4r_b.bin l_4r_b.bin l_4s_b.bin l_4s_b.bin s_3i_b.bin s_3j_b.bin c-2k.bpr c-2j.bpr v-5e.bpr ../empty.bin ../dk_wave.bin)
-ofile=a.dkong.rom
-ofileMd5sumValid="05fb1dd1ce6a786c538275d5776b1db1"
-
 exit_with_error() {
   echo -e "\nERROR: ${1}\n" >&2
   exit 1
 }
 
 check_dependencies() {
-  for j in mktemp unzip md5sum cat cut; do
-    command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires ${j}"
-  done
+  if [[ $OSTYPE == darwin* ]]; then
+    for j in unzip md5 cat cut; do
+      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires ${j}"
+    done
+  else
+    for j in unzip md5sum cat cut; do
+      command -v ${j} > /dev/null 2>&1 || exit_with_error "This script requires ${j}"
+    done
+  fi
 }
 
 check_permissions () {
@@ -22,9 +23,17 @@ check_permissions () {
   fi
 }
 
+read_ini () {
+  if [ ! -f ./build_rom.ini ]; then
+    exit_with_error "Cannot find build_rom.ini file."
+  else
+    source ./build_rom.ini
+  fi
+}
+
 uncompress_zip() {
   if [ -f "${zip}" ]; then
-    tmpdir=$(mktemp -d -p .)
+    tmpdir=tmp.`date +%Y%m%d%H%M%S%s`
     unzip -d ${tmpdir}/ ${zip}
     if [ $? != 0 ] ; then
       rm -rf $tmpdir
@@ -48,18 +57,23 @@ generate_rom() {
 }
 
 validate_rom() {
-  ofileMd5sumCurrent=$(md5sum ${tmpdir}/${ofile}|cut -f 1 -d " ")
+
+  if [[ $OSTYPE == darwin* ]]; then
+    ofileMd5sumCurrent=$(md5 -r ${tmpdir}/${ofile}|cut -f 1 -d " ")
+  else
+    ofileMd5sumCurrent=$(md5sum ${tmpdir}/${ofile}|cut -f 1 -d " ")
+  fi
 
   if [[ "${ofileMd5sumValid}" != "${ofileMd5sumCurrent}" ]]; then
-    echo -e "\nExpected ${ofile} md5sum:\t${ofileMd5sumValid}"
-    echo -e "Actual ${ofile} md5sum:\t${ofileMd5sumCurrent}"
+    echo -e "\nExpected ${ofile} checksum:\t${ofileMd5sumValid}"
+    echo -e "Actual ${ofile} checksum:\t${ofileMd5sumCurrent}"
     mv ${tmpdir}/${ofile} .
     rm -rf $tmpdir
     exit_with_error "Generated ${ofile} is invalid. This is more likely due to incorrect ${zip} content."
   else
     mv ${tmpdir}/${ofile} .
     rm -rf $tmpdir
-    echo -e "\nmd5sum verification passed for ${ofile}\nCopy the ${ofile} file into root of SD card along with the rbf file.\n"
+    echo -e "\nChecksum verification passed for ${ofile}\nCopy the ${ofile} file into root of SD card along with the rbf file.\n"
   fi
 }
 
@@ -68,6 +82,9 @@ check_dependencies
 
 ## verify write permissions
 check_permissions
+
+## load ini
+read_ini
 
 ## extract package
 uncompress_zip
