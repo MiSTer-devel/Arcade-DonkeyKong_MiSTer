@@ -51,6 +51,8 @@ module dkong_top
 	input  I_U2,I_D2,I_L2,I_R2,I_J2,
 	input  I_S1,I_S2,I_C1,
 
+	input  I_DIP,
+	
 	//    VGA (VIDEO) IF
 	output [2:0]O_VGA_R,
 	output [2:0]O_VGA_G,
@@ -356,7 +358,7 @@ wire [7:0]W_SW1={1'b1,1'b1,1'b1,I_J1,I_D1,I_U1,I_L1,I_R1};
 wire [7:0]W_SW2={1'b1,1'b1,1'b1,I_J2,I_D2,I_U2,I_L2,I_R2};
 wire [7:0]W_SW3={I_C1,1'b1,1'b1,1'b1,I_S2,I_S1,1'b1,1'b1};
 
-wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
+//wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
 
 dkong_inport inport
 (
@@ -364,7 +366,7 @@ dkong_inport inport
 	.I_SW1(W_SW1),
 	.I_SW2(W_SW2),
 	.I_SW3(W_SW3),
-	.I_DIP(W_DIP),
+	.I_DIP(I_DIP),
 	//  enable
 	.I_SW1_OE_n(W_SW1_OEn),
 	.I_SW2_OE_n(W_SW2_OEn),
