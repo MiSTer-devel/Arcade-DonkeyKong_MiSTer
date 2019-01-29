@@ -358,7 +358,7 @@ wire [7:0]W_SW1={1'b1,1'b1,1'b1,I_J1,I_D1,I_U1,I_L1,I_R1};
 wire [7:0]W_SW2={1'b1,1'b1,1'b1,I_J2,I_D2,I_U2,I_L2,I_R2};
 wire [7:0]W_SW3={I_C1,1'b1,1'b1,1'b1,I_S2,I_S1,1'b1,1'b1};
 
-wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
+//wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
 
 dkong_inport inport
 (
