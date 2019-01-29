@@ -193,8 +193,8 @@ wire m_coin   = m_start1 | m_start2;
 //wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
 // 1 bit cocktail  - 3 bits - coins - 2 bits bonus - 2 bits lives 
 // put this back in if you want a cocktail option in the OSD
-//wire m_dip = { ~status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
-wire m_dip = { 1'b1 , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
+//wire [7:0]m_dip = { ~status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
+wire [7:0]m_dip = { 1'b1 , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
 
 wire hblank, vblank;
 reg  ce_vid;
@@ -286,7 +286,7 @@ dkong_top dkong
 	.I_S2(~m_start2),
 	.I_C1(~m_coin),
 
-   .I_DIP(m_dip),
+   .I_DIP_SW(m_dip),
 
 	
 	.O_VGA_R(r),

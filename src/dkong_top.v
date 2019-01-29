@@ -51,7 +51,7 @@ module dkong_top
 	input  I_U2,I_D2,I_L2,I_R2,I_J2,
 	input  I_S1,I_S2,I_C1,
 
-	input  I_DIP,
+	input  [7:0] I_DIP_SW,
 	
 	//    VGA (VIDEO) IF
 	output [2:0]O_VGA_R,
@@ -366,7 +366,7 @@ dkong_inport inport
 	.I_SW1(W_SW1),
 	.I_SW2(W_SW2),
 	.I_SW3(W_SW3),
-	.I_DIP(I_DIP),
+	.I_DIP(I_DIP_SW),
 	//  enable
 	.I_SW1_OE_n(W_SW1_OEn),
 	.I_SW2_OE_n(W_SW2_OEn),
