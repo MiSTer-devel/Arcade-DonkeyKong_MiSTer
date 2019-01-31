@@ -62,7 +62,7 @@ rram #(aw, DEPTH, memsize) ram
 );
 
 wire [DEPTH-1:0] out; 
-reg  [DEPTH-1:0] vout;
+reg  [DEPTH-1:0] vout,vout2;
 
 assign video_out = vout;
 
@@ -104,13 +104,15 @@ always @(posedge clk_in) begin
 	end
 end
 
-assign de = ~(hsync | vsync);
+assign de = ~(hsync | vbl);
 
+reg vbl;
 always @(posedge clk_out) begin
 	reg old_buff, old_buff2;
 	reg hs;
 	reg prex = 0, prey = 0;
 	reg [aw-1:0] addr_sav;
+	reg [1:0] vcnt;
 
 	integer xpos, ypos;
 	
@@ -123,19 +125,21 @@ always @(posedge clk_out) begin
 		xpos <= 0;
 		ypos <= 0;
 		vsync <= 0;
+		vcnt <= 0;
+		vbl <= 0;
 		prex <= 0;
 		prey <= 0;
 	end
-
-	if(~vsync) begin
+	else begin
 
 		if(DOUBLING) prex <= ~prex;
 		if(!DOUBLING || prex) begin
+			vout <= vout2;
 			hsync <= (xpos >= HEIGHT);
 			if((ypos<MARGIN) || (ypos>=WIDTH+MARGIN)) begin
-				vout <= 0;
+				vout2 <= 0;
 			end else begin
-				vout <= out;
+				vout2 <= out;
 				if(xpos < HEIGHT) addr_out <= addr_out + 1'd1;
 				if(xpos == HEIGHT) begin
 					if(DOUBLING) begin
@@ -150,9 +154,13 @@ always @(posedge clk_out) begin
 
 			if(xpos > (HEIGHT + 2)) begin
 				xpos  <= 0;
-				if(~prey) ypos  <= ypos + 1;
 				
-				if(ypos >= (WIDTH+MARGIN+MARGIN-1)) vsync <= 1;
+				if(ypos >= (WIDTH+MARGIN+MARGIN-1)) begin
+					vbl <= 1;
+					if(~&vcnt) vcnt <= vcnt + 1'd1;
+					else vsync <= 1;
+				end
+				else if(~prey) ypos <= ypos + 1;
 			end
 		end
 	end
