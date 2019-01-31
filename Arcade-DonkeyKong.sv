@@ -98,9 +98,9 @@ localparam CONF_STR = {
 	//"OC,Cabinet,Upright,Cocktail;",
 	"-;",
 
-	"T6,Reset;",
-	"J,Jump,Start 1P,Start 2P;",
-	"V,v1.10.",`BUILD_DATE
+	"R0,Reset;",
+	"J1,Jump,Start 1P,Start 2P;",
+	"V,v",`BUILD_DATE
 };
 
 ////////////////////   CLOCKS   ///////////////////
@@ -262,7 +262,7 @@ end
 dkong_top dkong
 (
 	.I_CLK_24576M(clk_sys),
-	.I_RESETn(~(RESET | status[0] | status[6] | buttons[1])),
+	.I_RESETn(~(RESET | status[0] | buttons[1])),
 
 	.dn_addr(ioctl_addr[18:0]),
 	.dn_data(ioctl_dout),
