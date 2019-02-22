@@ -95,11 +95,11 @@ localparam CONF_STR = {
 	"O89,Lives,3,4,5,6;",
 	"OAB,Bonus,7000,10000,15000,20000;",
 	// put this back in if you want a cocktail option in the OSD
-	//"OC,Cabinet,Upright,Cocktail;",
+	"OC,Cabinet,Upright,Cocktail;",
 	"-;",
-
+	"OF,Coin-free play,Yes,No;",
 	"R0,Reset;",
-	"J1,Jump,Start 1P,Start 2P;",
+	"J,Jump,Coin,Start 1P,Start 2P;",
 	"V,v",`BUILD_DATE
 };
 
@@ -168,6 +168,10 @@ always @(posedge clk_sys) begin
 
 			'h005: btn_one_player  <= pressed; // F1
 			'h006: btn_two_players <= pressed; // F2
+			
+			'h016: btn_one_player  <= pressed; // 1
+			'h01e: btn_two_players <= pressed; // 2
+			'h02e: btn_coin		  <= pressed; // 5				
 		endcase
 	end
 end
@@ -177,6 +181,7 @@ reg btn_down  = 0;
 reg btn_right = 0;
 reg btn_left  = 0;
 reg btn_fire  = 0;
+reg btn_coin  = 0;
 reg btn_one_player  = 0;
 reg btn_two_players = 0;
 
@@ -186,16 +191,16 @@ wire m_left   = status[2] ? btn_down  | joy[2] : btn_left  | joy[1];
 wire m_right  = status[2] ? btn_up    | joy[3] : btn_right | joy[0];
 wire m_fire   = btn_fire | joy[4];
 
-wire m_start1 = btn_one_player  | joy[5];
-wire m_start2 = btn_two_players | joy[6];
-wire m_coin   = m_start1 | m_start2;
+wire m_start1 = btn_one_player  | joy[6];
+wire m_start2 = btn_two_players | joy[7];
+wire m_coin   = status[15] ? btn_coin | joy[5] : btn_coin | joy[5]  | m_start1 | m_start2;
 
 // https://www.arcade-museum.com/dipswitch-settings/7610.html
 //wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
 // 1 bit cocktail  - 3 bits - coins - 2 bits bonus - 2 bits lives 
 // put this back in if you want a cocktail option in the OSD
-//wire [7:0]m_dip = { ~status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
-wire [7:0]m_dip = { 1'b1 , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
+wire [7:0]m_dip = { ~status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
+//wire [7:0]m_dip = { 1'b1 , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
 
 wire hblank, vblank;
 wire hs, vs;
