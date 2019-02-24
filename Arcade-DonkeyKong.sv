@@ -90,7 +90,7 @@ localparam CONF_STR = {
 	"-;",
 	"O1,Aspect Ratio,Original,Wide;",
 	"O2,Orientation,Vert,Horz;",
-	"O34,Scanlines(vert),No,25%,50%,75%;",
+	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",  
 	"-;",
 	"O89,Lives,3,4,5,6;",
 	"OAB,Bonus,7000,10000,15000,20000;",
@@ -98,15 +98,14 @@ localparam CONF_STR = {
 	//"OC,Cabinet,Upright,Cocktail;",
 	"-;",
 
-	"T6,Reset;",
-	"J,Jump,Start 1P,Start 2P;",
-	"V,v1.10.",`BUILD_DATE
+	"R0,Reset;",
+	"J1,Jump,Start 1P,Start 2P;",
+	"V,v",`BUILD_DATE
 };
 
 ////////////////////   CLOCKS   ///////////////////
 
 wire clk_sys;
-wire clk_hdmi = clk_sys;
 
 pll pll
 (
@@ -119,6 +118,7 @@ pll pll
 
 wire [31:0] status;
 wire  [1:0] buttons;
+wire        forced_scandoubler;
 
 wire        ioctl_download;
 wire        ioctl_wr;
@@ -139,6 +139,7 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 
 	.buttons(buttons),
 	.status(status),
+	.forced_scandoubler(forced_scandoubler),
 
 	.ioctl_download(ioctl_download),
 	.ioctl_wr(ioctl_wr),
@@ -197,47 +198,27 @@ wire m_coin   = m_start1 | m_start2;
 wire [7:0]m_dip = { 1'b1 , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
 
 wire hblank, vblank;
-reg  ce_vid;
 wire hs, vs;
-wire rde, rhs, rvs;
 wire [2:0] r,g;
 wire [1:0] b;
-wire [2:0] rr,rg;
-wire [1:0] rb;
 
-assign VGA_CLK  = clk_sys;
-assign VGA_CE   = ce_vid;
-assign VGA_R    = {r,r,r[2:1]};
-assign VGA_G    = {g,g,g[2:1]};
-assign VGA_B    = {b,b,b,b};
-assign VGA_DE   = ~(hblank | vblank);
-assign VGA_HS   = ~hs;
-assign VGA_VS   = ~vs;
-
-assign HDMI_CLK = status[2] ? VGA_CLK: clk_hdmi;
-assign HDMI_CE  = status[2] ? VGA_CE : 1'b1;
-assign HDMI_R   = status[2] ? VGA_R  : {rr,rr,rr[2:1]};
-assign HDMI_G   = status[2] ? VGA_G  : {rg,rg,rg[2:1]};
-assign HDMI_B   = status[2] ? VGA_B  : {rb,rb,rb,rb};
-assign HDMI_DE  = status[2] ? VGA_DE : rde;
-assign HDMI_HS  = status[2] ? VGA_HS : rhs;
-assign HDMI_VS  = status[2] ? VGA_VS : rvs;
-assign HDMI_SL  = status[2] ? 2'd0   : status[4:3];
-
-screen_rotate #(256,224,8) screen_rotate
+arcade_rotate_fx #(256,224,8) arcade_video
 (
-	.clk_in(clk_sys),
-	.ce_in(ce_vid),
-	.video_in({r,g,b}),
-	.hblank(hblank),
-	.vblank(vblank),
+	.*,
 
-	.clk_out(clk_hdmi),
-	.video_out({rr,rg,rb}),
-	.hsync(rhs),
-	.vsync(rvs),
-	.de(rde)
+	.clk_video(clk_sys),
+	.ce_pix(ce_vid),
+
+	.RGB_in({r,g,b}),
+	.HBlank(hblank),
+	.VBlank(vblank),
+	.HSync(~hs),
+	.VSync(~vs),
+	
+	.fx(status[5:3]),
+	.no_rotate(status[2])
 );
+
 
 wire [7:0] audio;
 assign AUDIO_L = {audio,audio};
@@ -246,6 +227,7 @@ assign AUDIO_S = 0;
 
 assign hblank = hbl[8];
 
+reg  ce_vid;
 wire clk_pix;
 wire hbl0;
 reg [8:0] hbl;
@@ -262,7 +244,7 @@ end
 dkong_top dkong
 (
 	.I_CLK_24576M(clk_sys),
-	.I_RESETn(~(RESET | status[0] | status[6] | buttons[1])),
+	.I_RESETn(~(RESET | status[0] | buttons[1])),
 
 	.dn_addr(ioctl_addr[18:0]),
 	.dn_data(ioctl_dout),
