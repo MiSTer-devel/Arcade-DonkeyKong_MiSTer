@@ -90,7 +90,10 @@ module sys_top
 	input   [3:0] SW,
 
 	////////// MB LED ///////////
-	output  [7:0] LED
+	output  [7:0] LED,
+
+	///////// USER IO ///////////
+	inout   [5:0] USER_IO
 );
 
 
@@ -769,6 +772,17 @@ alsa alsa
 	.pcm_l(alsa_l),
 	.pcm_r(alsa_r)
 );
+
+
+////////////////  User I/O (USB 3.0 connector) /////////////////////////
+
+assign USER_IO[0] = 1'bZ;
+assign USER_IO[1] = 1'bZ;
+assign USER_IO[2] = (SW[1] & ~HDMI_I2S)   ? 1'b0 : 1'bZ;
+assign USER_IO[3] = 1'bZ;
+assign USER_IO[4] = (SW[1] & ~HDMI_SCLK)  ? 1'b0 : 1'bZ;
+assign USER_IO[5] = (SW[1] & ~HDMI_LRCLK) ? 1'b0 : 1'bZ;
+
 
 ///////////////////  User module connection ////////////////////////////
 
