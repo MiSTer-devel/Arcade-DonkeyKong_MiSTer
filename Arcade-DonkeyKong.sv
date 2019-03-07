@@ -167,6 +167,17 @@ always @(posedge clk_sys) begin
 
 			'h005: btn_one_player  <= pressed; // F1
 			'h006: btn_two_players <= pressed; // F2
+			
+			// JPAC/IPAC/MAME Style Codes
+			'h016: btn_start_1     <= pressed; // 1
+			'h01E: btn_start_2     <= pressed; // 2
+			'h02E: btn_coin_1      <= pressed; // 5
+			'h036: btn_coin_2      <= pressed; // 6
+			'h02D: btn_up_2        <= pressed; // R
+			'h02B: btn_down_2      <= pressed; // F
+			'h023: btn_left_2      <= pressed; // D
+			'h034: btn_right_2     <= pressed; // G
+			'h01C: btn_fire_2      <= pressed; // A
 		endcase
 	end
 end
@@ -179,15 +190,31 @@ reg btn_fire  = 0;
 reg btn_one_player  = 0;
 reg btn_two_players = 0;
 
+reg btn_start_1=0;
+reg btn_start_2=0;
+reg btn_coin_1=0;
+reg btn_coin_2=0;
+reg btn_up_2=0;
+reg btn_down_2=0;
+reg btn_left_2=0;
+reg btn_right_2=0;
+reg btn_fire_2=0;
+
+wire m_up_2     = status[2] ? btn_left_2  | joy[1] : btn_up_2    | joy[3];
+wire m_down_2   = status[2] ? btn_right_2 | joy[0] : btn_down_2  | joy[2];
+wire m_left_2   = status[2] ? btn_down_2  | joy[2] : btn_left_2  | joy[1];
+wire m_right_2  = status[2] ? btn_up_2    | joy[3] : btn_right_2 | joy[0];
+wire m_fire_2  = btn_fire_2 | joy[4];
+
 wire m_up     = status[2] ? btn_left  | joy[1] : btn_up    | joy[3];
 wire m_down   = status[2] ? btn_right | joy[0] : btn_down  | joy[2];
 wire m_left   = status[2] ? btn_down  | joy[2] : btn_left  | joy[1];
 wire m_right  = status[2] ? btn_up    | joy[3] : btn_right | joy[0];
 wire m_fire   = btn_fire | joy[4];
 
-wire m_start1 = btn_one_player  | joy[5];
-wire m_start2 = btn_two_players | joy[6];
-wire m_coin   = m_start1 | m_start2;
+wire m_start1 = btn_one_player  | joy[5] | btn_start_1;
+wire m_start2 = btn_two_players | joy[6] | btn_start_2;
+wire m_coin   = m_start1 | m_start2 | btn_coin_1 | btn_coin_2;
 
 // https://www.arcade-museum.com/dipswitch-settings/7610.html
 //wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
@@ -255,17 +282,17 @@ dkong_top dkong
 	.I_R1(~m_right),
 	.I_J1(~m_fire),
 	
-	.I_U2(~m_up),
-	.I_D2(~m_down),
-	.I_L2(~m_left),
-	.I_R2(~m_right),
-	.I_J2(~m_fire),
+	.I_U2(~m_up_2),
+	.I_D2(~m_down_2),
+	.I_L2(~m_left_2),
+	.I_R2(~m_right_2),
+	.I_J2(~m_fire_2),
 
 	.I_S1(~m_start1),
 	.I_S2(~m_start2),
 	.I_C1(~m_coin),
 
-   .I_DIP_SW(m_dip),
+	.I_DIP_SW(m_dip),
 
 	
 	.O_VGA_R(r),
