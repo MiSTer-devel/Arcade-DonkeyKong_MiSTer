@@ -87,6 +87,7 @@ assign HDMI_ARY = status[1] ? 8'd9  : status[2] ? 8'd3 : 8'd1;
 `include "build_id.v" 
 localparam CONF_STR = {
 	"A.DKONG;;",
+	"F,rom;", // allow loading of alternate ROMs
 	"-;",
 	"O1,Aspect Ratio,Original,Wide;",
 	"O2,Orientation,Vert,Horz;",
@@ -268,7 +269,7 @@ end
 dkong_top dkong
 (
 	.I_CLK_24576M(clk_sys),
-	.I_RESETn(~(RESET | status[0] | buttons[1])),
+	.I_RESETn(~(RESET | status[0] | buttons[1]| ioctl_download)),
 
 	.dn_addr(ioctl_addr[18:0]),
 	.dn_data(ioctl_dout),
