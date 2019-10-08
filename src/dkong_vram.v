@@ -124,7 +124,20 @@ ram_2N U_2N(
 
 //    Parts  2M
 reg    [3:0]O_COL;
-always@(negedge CLK_2M) O_COL[3:0] <= W_2N_DO[3:0];
+//always@(negedge CLK_2M) O_COL[3:0] <= W_2N_DO[3:0];
+
+// Fix for colour timing issue.
+always@(negedge I_H_CNT[0]) begin
+
+	reg CLK_2M_d;
+
+	CLK_2M_d <= CLK_2M;
+
+	if (CLK_2M_d & ~CLK_2M) begin
+		O_COL[3:0] <= W_2N_DO[3:0];
+	end
+
+end
 
 wire   [7:0]W_3P_DO,W_3N_DO;
 wire   ROM_3PN_CE = ~I_H_CNT[9];
