@@ -102,6 +102,20 @@ module emu
 	output  [7:0] DDRAM_BE,
 	output        DDRAM_WE,
 
+`ifdef USE_SDRAM	
+	output        SDRAM_CLK,
+	output        SDRAM_CKE,
+	output [12:0] SDRAM_A,
+	output  [1:0] SDRAM_BA,
+	inout  [15:0] SDRAM_DQ,
+	output        SDRAM_DQML,
+	output        SDRAM_DQMH,
+	output        SDRAM_nCS,
+	output        SDRAM_nCAS,
+	output        SDRAM_nRAS,
+	output        SDRAM_nWE,
+`endif
+
 	// Open-drain User port.
 	// 0 - D+/RX
 	// 1 - D-/TX
@@ -120,11 +134,12 @@ assign USER_OUT  = '1;
 assign LED_USER  = ioctl_download;
 assign LED_DISK  = 0;
 assign LED_POWER = 0;
+assign {FB_PAL_CLK, FB_FORCE_BLANK, FB_PAL_ADDR, FB_PAL_DOUT, FB_PAL_WR} = '0;
 
 wire [1:0] ar = status[20:19];
 
-assign VIDEO_ARX = (!ar) ? (status[2]  ? 8'd4 : 8'd3) : (ar - 1'd1);
-assign VIDEO_ARY = (!ar) ? (status[2]  ? 8'd3 : 8'd4) : 12'd0;
+assign VIDEO_ARX = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd4 : 8'd3) : (ar - 1'd1);
+assign VIDEO_ARY = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd3 : 8'd4) : 12'd0;
 
 
 
@@ -132,12 +147,10 @@ assign VIDEO_ARY = (!ar) ? (status[2]  ? 8'd3 : 8'd4) : 12'd0;
 localparam CONF_STR = {
 	"A.DKONG;;",
 	"H0OJK,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"H0O2,Orientation,Vert,Horz;",
+	"H1H0O2,Orientation,Vert,Horz;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",  
 	"-;",
-	"O89,Lives,3,4,5,6;",
-	"OAB,Bonus,7000,10000,15000,20000;",
-	"OC,Cabinet,Upright,Cocktail;",
+	"DIP;",
 	"-;",
 
 	"R0,Reset;",
@@ -150,13 +163,15 @@ localparam CONF_STR = {
 ////////////////////   CLOCKS   ///////////////////
 
 wire clk_sys,clk_49;
+wire pll_locked;
 
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
 	.outclk_0(clk_49),
-	.outclk_1(clk_sys)
+	.outclk_1(clk_sys),
+	.locked(pll_locked)
 );
 
 ///////////////////////////////////////////////////
@@ -189,7 +204,7 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 
 	.buttons(buttons),
 	.status(status),
-	.status_menumask(direct_video),
+	.status_menumask({mod_pestplace,direct_video}),
 	.forced_scandoubler(forced_scandoubler),
 	.gamma_bus(gamma_bus),
 	.direct_video(direct_video),
@@ -206,7 +221,30 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 );
 
 
-wire no_rotate = status[2] & ~direct_video;
+
+reg [7:0] sw[8];
+always @(posedge clk_sys) if (ioctl_wr && (ioctl_index==254) && !ioctl_addr[24:3]) sw[ioctl_addr[2:0]] <= ioctl_dout;
+
+reg mod_dk = 0;
+reg mod_dkjr = 0;
+reg mod_dk3 = 0;
+reg mod_radarscope=0;
+reg mod_pestplace=0;
+
+
+always @(posedge clk_sys) begin
+	reg [7:0] mod = 0;
+	if (ioctl_wr & (ioctl_index==1)) mod <= ioctl_dout;
+	
+	mod_dk <= (mod == 0);
+	mod_dkjr <= (mod == 1);
+	mod_dk3 <= (mod == 2);
+	mod_radarscope <= (mod == 3);
+	mod_pestplace   <= (mod == 4);
+end
+
+
+
 
 
 wire m_up_2     = joy[3];
@@ -225,15 +263,10 @@ wire m_start1 =  joy[5] ;
 wire m_start2 =  joy[6] ;
 wire m_coin   =  joy[7];
 
-// https://www.arcade-museum.com/dipswitch-settings/7610.html
-//wire [7:0]W_DIP={1'b1,1'b0,1'b0,1'b0,`DIP_BOUNS,`DIP_LIVES};
-// 1 bit cocktail  - 3 bits - coins - 2 bits bonus - 2 bits lives 
-wire [7:0]m_dip = { ~status[12] , 1'b0,1'b0,1'b0 , status[11:10], status[9:8]};
 
 wire hblank, vblank;
-wire hs, vs;
-wire [2:0] r,g;
-wire [1:0] b;
+wire hs_n, vs_n;
+wire [3:0] r,g,b;
 
 reg ce_pix;
 always @(posedge clk_49) begin
@@ -243,11 +276,12 @@ always @(posedge clk_49) begin
         ce_pix <= !div;
 end
 
+wire no_rotate = status[2] | direct_video | mod_pestplace;
 wire rotate_ccw = 0;
 screen_rotate screen_rotate (.*);
 
 
-arcade_video #(256,8) arcade_video
+arcade_video #(256,12) arcade_video
 (
 	.*,
 
@@ -256,8 +290,8 @@ arcade_video #(256,8) arcade_video
 	.RGB_in({r,g,b}),
 	.HBlank(hblank),
 	.VBlank(vblank),
-	.HSync(~hs),
-	.VSync(~vs),
+	.HSync(~hs_n),
+	.VSync(~vs_n),
 
 	.fx(status[5:3])
 );
@@ -284,17 +318,56 @@ always @(posedge clk_sys) begin
 	end
 end
 
-dkong_top dkong
-(
+wire reset = RESET | status[0] | buttons[1]| ioctl_download;
+
+
+
+wire [15:0] main_rom_a;
+wire [7:0] main_rom_do;
+wire [11:0] sub_rom_a;
+wire [7:0] sub_rom_do;
+wire [18:0] wav_rom_a;
+wire [7:0] wav_rom_do;
+
+
+dpram #(15,8) cpu_rom (
+	.clock_a(clk_sys),
+	.address_a(main_rom_a[14:0]),
+	.q_a(main_rom_do),
+
+	.clock_b(clk_sys),
+	.address_b(ioctl_addr[14:0]),
+	.wren_b(ioctl_wr && ioctl_download && (ioctl_addr < 'd32768) && !ioctl_index),
+	.data_b(ioctl_dout)
+	);
+dpram #(12,8) snd_rom (
+	.clock_a(clk_sys),
+	.address_a(sub_rom_a[11:0]),
+	.q_a(sub_rom_do),
+
+	.clock_b(clk_sys),
+	.address_b(ioctl_addr[11:0]),
+	.wren_b(ioctl_wr && ioctl_download && (ioctl_addr < 'hF000 && ioctl_addr >= 'hE000) && !ioctl_index),
+	.data_b(ioctl_dout)
+	);
+dpram #(16,8) wav_rom (
+	.clock_a(clk_sys),
+	.address_a(wav_rom_a[15:0]),
+	.q_a(wav_rom_do),
+
+	.clock_b(clk_sys),
+	.address_b(ioctl_addr[15:0]),
+	.wren_b(ioctl_wr && ioctl_download && (ioctl_addr >= 'hFF00) && !ioctl_index),
+	.data_b(ioctl_dout)
+	);
+
+
+
+
+
+dkong_top dkong(				   
 	.I_CLK_24576M(clk_sys),
-	.I_RESETn(~(RESET | status[0] | buttons[1]| ioctl_download)),
-
-	.dn_addr(ioctl_addr[18:0]),
-	.dn_data(ioctl_dout),
-	.dn_wr(ioctl_wr && !ioctl_index),
-
-	.O_PIX(clk_pix),
-
+	.I_RESETn(~reset),
 	.I_U1(~m_up),
 	.I_D1(~m_down),
 	.I_L1(~m_left),
@@ -311,19 +384,33 @@ dkong_top dkong
 	.I_S2(~m_start2),
 	.I_C1(~m_coin),
 
-	.I_DIP_SW(m_dip),
+	.I_DIP_SW(sw[0]),
 
-	
+	.I_DKJR(mod_dkjr|mod_pestplace|mod_dk3),
+	.I_DK3B(mod_dk3),
+	.I_RADARSCP(mod_radarscope),
+	.I_PESTPLCE(mod_pestplace),
+
+	.O_PIX(clk_pix),
+
+	.O_SOUND_DAT(audio),
 	.O_VGA_R(r),
 	.O_VGA_G(g),
 	.O_VGA_B(b),
-	.O_VGA_H_SYNCn(hs),
-	.O_VGA_V_SYNCn(vs),
-
 	.O_H_BLANK(hbl0),
 	.O_V_BLANK(vblank),
+	.O_VGA_H_SYNCn(hs_n),
+	.O_VGA_V_SYNCn(vs_n),
 
-	.O_SOUND_DAT(audio)
-);
+	.DL_ADDR(ioctl_addr[15:0]),
+	.DL_WR(ioctl_wr && ioctl_addr[23:16] == 0 && !ioctl_index),
+	.DL_DATA(ioctl_dout),
+	.MAIN_CPU_A(main_rom_a),
+	.MAIN_CPU_DO(main_rom_do),
+	.SND_ROM_A(sub_rom_a),
+	.SND_ROM_DO( sub_rom_do),
+	.WAV_ROM_A(wav_rom_a),
+	.WAV_ROM_DO( wav_rom_do)
+	);
 
 endmodule

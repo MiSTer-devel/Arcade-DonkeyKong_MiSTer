@@ -49,8 +49,8 @@ begin
     sample <= 0;
     sample_pls <= 0;
   end else begin
-    sample <= (sample == Sample_cnt-1) ? 0 : sample+1;
-    sample_pls <= (sample == Sample_cnt-1)? 1 : 0 ;
+    sample <= (sample == Sample_cnt - 1'b1) ? 12'b0 : sample+1'b1;
+    sample_pls <= (sample == Sample_cnt - 1'b1)? 1'b1 : 1'b0 ;
   end
 end
 
@@ -104,7 +104,7 @@ begin
           status1 <= 3'b000;
           ad_cnt <= ad_cnt;
         end else begin
-          ad_cnt <= ad_cnt+1 ;
+          ad_cnt <= ad_cnt+1'b1 ;
         end
       end
     end

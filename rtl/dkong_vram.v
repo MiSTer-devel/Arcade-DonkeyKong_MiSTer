@@ -28,56 +28,27 @@
 //-----------------------------------------------------------------------------------------
 
 module dkong_vram(
+	input  CLK_24M,
+	input  CLK_EN,
+	input  [9:0]I_AB,
+	input  [7:0]I_DB,
+	input  I_VRAM_WRn,
+	input  I_VRAM_RDn,
+	input  I_FLIP,
+	input  [9:0]I_H_CNT,
+	input  [7:0]I_VF_CNT,
+	input  I_CMPBLK,
+	input  I_4H_Q0,
+	output [7:0]O_DB,
+	output reg [3:0]O_COL,
+	output [1:0]O_VID,
+	output O_VRAMBUSYn,
+	output O_ESBLKn,
 
-CLK_12M,
-I_AB,
-I_DB,
-I_VRAM_WRn,
-I_VRAM_RDn,
-I_FLIP,
-I_H_CNT,
-I_VF_CNT,
-I_CMPBLK,
-O_VRAM_AB,
-I_VRAM_D1,
-I_VRAM_D2,
-I_CNF_EN,
-I_CNF_A,
-I_CNF_D,
-I_WE4,
-//---- Debug ----
-//---------------
-O_DB,
-O_COL,
-O_VID,
-O_VRAMBUSYn,
-O_ESBLKn
-
-);
-
-input  CLK_12M;
-input  [9:0]I_AB;
-input  [7:0]I_DB;
-input  I_VRAM_WRn;
-input  I_VRAM_RDn;
-input  I_FLIP;
-input  [9:0]I_H_CNT;
-input  [7:0]I_VF_CNT;
-input  I_CMPBLK;
-
-input  I_CNF_EN;
-input  [7:0]I_CNF_A;
-input  [7:0]I_CNF_D;
-input  I_WE4;
-
-output [7:0]O_DB;
-output [3:0]O_COL;
-output [1:0]O_VID;
-output O_VRAMBUSYn;
-output O_ESBLKn;
-
-output [11:0]O_VRAM_AB;
-input  [7:0]I_VRAM_D1,I_VRAM_D2;
+	input [15:0] DL_ADDR,
+	input DL_WR,
+	input [7:0] DL_DATA
+	);
 
 //---- Debug ----
 //---------------
@@ -92,12 +63,12 @@ wire   [9:0]W_vram_AB = I_CMPBLK ? W_cnt_AB : I_AB ;
 wire        W_vram_CS = I_CMPBLK ? 1'b0     : I_VRAM_WRn & I_VRAM_RDn;
 wire        W_2S4     = I_CMPBLK ? 1'b0     : 1'b1 ;
 
-reg    CLK_2M;
-always@(negedge CLK_12M) CLK_2M <= ~(I_H_CNT[1]&I_H_CNT[2]&I_H_CNT[3]);
+wire CLK_2M = ~(&I_H_CNT[3:1]) /* synthesis keep */;
+wire CLK_2M_EN = CLK_EN & I_H_CNT[3:0] == 4'b1111/* synthesis keep */;
 
 ram_1024_8 U_2PR(
 
-.I_CLK(~CLK_12M),
+.I_CLK(CLK_24M),
 .I_ADDR(W_vram_AB),
 .I_D(WI_DB),
 .I_CE(~W_vram_CS),
@@ -107,50 +78,37 @@ ram_1024_8 U_2PR(
 );
 
 wire   [3:0]W_2N_DO;
-//-----  ROM 2N  -----
-wire   [7:0]W_2N_AD = I_CNF_EN ? I_CNF_A : {W_vram_AB[9:7],W_vram_AB[4:0]};
-wire   [3:0]W_2N_DI = I_CNF_EN ? I_CNF_D[3:0] : 4'h0 ;
+/*
+col3 col3 (
+	.clk(CLK_24M),
+	.addr({W_vram_AB[9:7],W_vram_AB[4:0]}),
+	.data(W_2N_DO)
+	);
+*/
+dpram #(8,4) col3 (
+	.clock_a(CLK_24M),
+	.address_a({W_vram_AB[9:7],W_vram_AB[4:0]}),
+	.q_a(W_2N_DO),
 
-ram_2N U_2N(
-
-.I_CLK(CLK_12M),
-.I_ADDR(W_2N_AD),
-.I_D(W_2N_DI),
-.I_CE(1'b1),
-.I_WE(I_WE4),
-.O_D(W_2N_DO)
-
-);
+	.clock_b(CLK_24M),
+	.address_b(DL_ADDR[7:0]),
+	.wren_b(DL_WR && DL_ADDR[15:8] == 8'hF4),
+	.data_b(DL_DATA[3:0])
+	);
 
 //    Parts  2M
-reg    [3:0]O_COL;
-//always@(negedge CLK_2M) O_COL[3:0] <= W_2N_DO[3:0];
+always@(posedge CLK_24M) if (CLK_2M_EN) O_COL[3:0] <= W_2N_DO[3:0];
 
-// Fix for colour timing issue.
-always@(negedge I_H_CNT[0]) begin
-
-	reg CLK_2M_d;
-
-	CLK_2M_d <= CLK_2M;
-
-	if (CLK_2M_d & ~CLK_2M) begin
-		O_COL[3:0] <= W_2N_DO[3:0];
-	end
-
-end
-
-wire   [7:0]W_3P_DO,W_3N_DO;
 wire   ROM_3PN_CE = ~I_H_CNT[9];
 
-assign O_VRAM_AB = {1'b0,WO_DB[7:0],I_VF_CNT[2:0]};
-assign W_3P_DO   = I_VRAM_D1;
-assign W_3N_DO   = I_VRAM_D2;
+
 
 wire   [3:0]W_4M_a,W_4M_b;
 wire   [3:0]W_4M_Y;
 wire   W_4P_Qa,W_4P_Qh,W_4N_Qa,W_4N_Qh;
 
-wire   CLK_4PN = I_H_CNT[0];
+wire   CLK_4PN = ~I_H_CNT[0] /* synthesis keep */;
+wire   CLK_4PN_EN = CLK_EN & I_H_CNT[0] /* synthesis keep */;
 
 //------  PARTS 4P  ---------------------------------------------- 
 wire   [1:0]C_4P = W_4M_Y[1:0];
@@ -159,8 +117,8 @@ reg    [7:0]reg_4P;
 
 assign W_4P_Qa = reg_4P[7];
 assign W_4P_Qh = reg_4P[0];
-always@(posedge CLK_4PN)
-begin
+always@(posedge CLK_24M)
+if (CLK_4PN_EN) begin
    case(C_4P)
       2'b00: reg_4P <= reg_4P;
       2'b10: reg_4P <= {reg_4P[6:0],1'b0};
@@ -175,8 +133,8 @@ reg    [7:0]reg_4N;
 
 assign W_4N_Qa = reg_4N[7];
 assign W_4N_Qh = reg_4N[0];
-always@(posedge CLK_4PN)
-begin
+always@(posedge CLK_24M)
+if (CLK_4PN_EN) begin
    case(C_4N)
       2'b00: reg_4N <= reg_4N;
       2'b10: reg_4N <= {reg_4N[6:0],1'b0};
@@ -196,25 +154,60 @@ assign O_VID[1] = W_4M_Y[3];
 //------  PARTS 2K1 ----------------------------------------------
 reg    W_VRAMBUSY;
 assign O_VRAMBUSYn = ~W_VRAMBUSY;
-always@(posedge I_H_CNT[2] or negedge I_H_CNT[9])
+always@(posedge CLK_24M/*I_H_CNT[2]*/ or negedge I_H_CNT[9])
 begin
    if(I_H_CNT[9] == 1'b0)
       W_VRAMBUSY <= 1'b1;
-   else
+   else if (CLK_EN & I_H_CNT[2:0] == 3'b0111)
       W_VRAMBUSY <= I_H_CNT[4]&I_H_CNT[5]&I_H_CNT[6]&I_H_CNT[7];
 end
 
 //------  PARTS 2K2 ----------------------------------------------
 reg    W_ESBLK;
 assign O_ESBLKn = ~W_ESBLK;
-always@(posedge I_H_CNT[6] or negedge I_H_CNT[9])
+always@(posedge CLK_24M/*I_H_CNT[6]*/ or negedge I_H_CNT[9])
 begin
    if(I_H_CNT[9] == 1'b0)
       W_ESBLK <= 1'b0;
-   else
+   else if (CLK_EN & I_H_CNT[6:0] == 7'b0111111)
       W_ESBLK <= ~I_H_CNT[7];
 end
 
+wire [7:0] W_3P_DO, W_3N_DO;
+/*
+vid1 vid1 (
+	.clk(CLK_24M),
+	.addr({1'b0,WO_DB[7:0],I_VF_CNT[2:0]}),
+	.data(W_3P_DO)
+	);
+*/
+dpram #(12,8) vid1 (
+	.clock_a(CLK_24M),
+	.address_a({I_4H_Q0,WO_DB[7:0],I_VF_CNT[2:0]}),
+	.q_a(W_3P_DO),
+
+	.clock_b(CLK_24M),
+	.address_b(DL_ADDR[11:0]),
+	.wren_b(DL_WR && DL_ADDR[15:12] == 4'h8),
+	.data_b(DL_DATA)
+	);
+/*
+vid2 vid2 (
+	.clk(CLK_24M),
+	.addr({1'b0,WO_DB[7:0],I_VF_CNT[2:0]}),
+	.data(W_3N_DO)
+	);
+*/
+dpram #(12,8) vid2 (
+	.clock_a(CLK_24M),
+	.address_a({I_4H_Q0,WO_DB[7:0],I_VF_CNT[2:0]}),
+	.q_a(W_3N_DO),
+
+	.clock_b(CLK_24M),
+	.address_b(DL_ADDR[11:0]),
+	.wren_b(DL_WR && DL_ADDR[15:12] == 4'h9),
+	.data_b(DL_DATA)
+	);
 
 endmodule
 
