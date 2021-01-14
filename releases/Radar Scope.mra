@@ -1,0 +1,54 @@
+<misterromdescription>
+	<name>Radar Scope</name>
+	<mameversion>0227</mameversion>
+	<setname>radarscp</setname>
+	<mratimestamp>20210110010006</mratimestamp>
+	<year>1980</year>
+	<manufacturer>Nintendo</manufacturer>
+	<category>Space / Galaxian</category>
+	<category>Space / Shooter</category>
+	<rbf>donkeykong</rbf>
+	<mameinfo parent="0" cpp="dkong" input="radarscp"/>
+	<display type="raster" rotate="270"/>
+	<switches default="80" base="8">
+		<dip bits="0,1"    name="Lives" ids="3,4,5,6"/>
+		<dip bits="2,3"    name="Bonus Life" ids="7K,10K,15K,20K"/>
+		<dip bits="4,6"    name="Coins" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P"/>
+		<dip bits="7"      name="Cabinet" ids="Cocktail,Upright"/>
+	</switches>
+	<rom index="0" zip="radarscp.zip" md5="none">
+		<part crc="40949e0d" name="trs2c5fc"/>
+		<part crc="afa8c49f" name="trs2c5gc"/>
+		<part crc="51b8263d" name="trs2c5hc"/>
+		<part crc="1f0101f7" name="trs2c5kc"/>
+		<part crc="40949e0d" name="trs2c5fc"/>
+		<part crc="afa8c49f" name="trs2c5gc"/>
+		<part crc="51b8263d" name="trs2c5hc"/>
+		<part crc="1f0101f7" name="trs2c5kc"/>
+		<part crc="f095330e" name="trs2v3gc"/>
+		<part crc="f095330e" name="trs2v3gc"/>
+		<part crc="15a316f0" name="trs2v3hc"/>
+		<part crc="15a316f0" name="trs2v3hc"/>
+		<part crc="e0bb0db9" name="trs2v3dc"/>
+		<part crc="e0bb0db9" name="trs2v3dc"/>
+		<part crc="6c4e7dad" name="trs2v3cc"/>
+		<part crc="6c4e7dad" name="trs2v3cc"/>
+		<part crc="6fdd63f1" name="trs2v3bc"/>
+		<part crc="6fdd63f1" name="trs2v3bc"/>
+		<part crc="bbf62755" name="trs2v3ac"/>
+		<part crc="bbf62755" name="trs2v3ac"/>
+		<part crc="78034f14" name="trs2s3i"/>
+		<part crc="78034f14" name="trs2s3i"/>
+		<part crc="54609d61" name="rs2-x.xxx"/>
+		<part crc="54609d61" name="rs2-x.xxx"/>
+		<part crc="79a7d831" name="rs2-c.xxx"/>
+		<part crc="79a7d831" name="rs2-c.xxx"/>
+		<part crc="1b828315" name="rs2-v.1hc"/>
+		<part repeat="768">00</part>
+		<part crc="0eca8d6b" name="trs2v3ec"/>
+		<part repeat="40960">00</part>
+	</rom>
+	<rom index="1">
+		<part>03</part>
+	</rom>
+</misterromdescription>
