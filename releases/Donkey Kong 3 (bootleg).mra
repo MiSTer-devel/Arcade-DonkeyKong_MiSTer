@@ -2,43 +2,43 @@
 	<name>Donkey Kong 3 (bootleg on DKJr HW)</name>
 	<mameversion>0217</mameversion>
 	<setname>dkong3b</setname>
-	<mratimestamp>201912300000</mratimestamp>
-	<year>1982</year>
-	<manufacturer>Nintendo of America</manufacturer>
+	<mratimestamp>202101150843</mratimestamp>
+	<year>1984</year>
+	<manufacturer>bootleg</manufacturer>
 	<category>Maze / Monkeys</category>
 	<category>Platform</category>
 	<category>Platform / Mario Bros.</category>
 	<rbf>DonkeyKong</rbf>
 
-	<buttons names="Jump,Start 1P,Start 2P,Coin" default="A,Start,Select,R" />
+	<buttons names="Spray,Start 1P,Start 2P,Coin" default="A,Start,Select,R"/>
 
 	<rom index="1"><part>02</part></rom>
-	<rom index="0" zip="dkong3.zip" md5="none" type="merged">
+	<rom index="0" zip="dkong3.zip|dkong3b.zip" md5="403f810061c5eda8651b5284af4b92ce" type="merged|nonmerged">
 
 		<!-- Main CPU 32k-->
-		<part name="dkong3b/5b.bin"/>
-		<part  name="dkong3b/5c-2.bin"/>
-		<part  name="dkong3b/5e-2.bin"/>
-		<part name="dkong3b/5c-1.bin"/>
-		<part  name="dkong3b/5e-1.bin"/>
+		<part crc="549979bc" name="dkong3b/5b.bin"/>
+		<part crc="b9dcbae6" name="dkong3b/5c-2.bin"/>
+		<part crc="5a61868f" name="dkong3b/5e-2.bin"/>
+		<part crc="77a012d6" name="dkong3b/5c-1.bin"/>
+		<part crc="745ed767" name="dkong3b/5e-1.bin"/>
 
 		<!-- GFX1 8k-->
-		<part  name="dkong3b/3p.bin"/>
-		<part  name="dkong3b/3n.bin"/>
+		<part crc="3d1b87ce" name="dkong3b/3p.bin"/>
+		<part crc="fed67d35" name="dkong3b/3n.bin"/>
 
 		<!-- GFX2 16k-->
-		<part  name="dk3v.7c"/>
-		<part  name="dk3v.7d"/>
-		<part  name="dk3v.7e"/>
-		<part  name="dk3v.7f"/>
+		<part crc="8ffa1737" name="dk3v.7c"/>
+		<part crc="9ac84686" name="dk3v.7d"/>
+		<part crc="0c0af3fb" name="dk3v.7e"/>
+		<part crc="55c58662" name="dk3v.7f"/>
 
 		<!-- Sound CPU 4k-->
-		<part  name="dkong3b/3h.bin"/>
+		<part crc="715da5f8" name="dkong3b/3h.bin"/>
 
 		<!-- LUTs -->
-		<part  name="dkc1-c.1c"/>
-		<part  name="dkc1-c.1d"/>
-		<part  name="dkc1-v.2n"/>
+		<part crc="66a77f40" name="dkc1-c.1c"/>
+		<part crc="df54befc" name="dkc1-c.1d"/>
+		<part crc="50e33434" name="dkc1-v.2n"/>
 		<part repeat="2816">00</part>
 
 	</rom>
