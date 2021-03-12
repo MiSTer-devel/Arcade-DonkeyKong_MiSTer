@@ -39,8 +39,12 @@ module dkong_top
 	input  I_DK3B,
 	input  I_RADARSCP,
 	input  I_PESTPLCE,
-	
+
 	//    VGA (VIDEO) IF
+	input flip_screen,
+	input [8:0] H_OFFSET,
+	input [8:0] V_OFFSET,
+
 	output [3:0]O_VGA_R,
 	output [3:0]O_VGA_G,
 	output [3:0]O_VGA_B,
@@ -375,6 +379,8 @@ dkong_hv_count hv
 	.I_CLK(W_CLK_24576M),
 	.RST_n(W_RESETn),
 	.V_FLIP(W_FLIP_HV),
+	.H_OFFSET(H_OFFSET),
+	.V_OFFSET(V_OFFSET),
 	// output
 	.O_CLK(W_CLK_12288M),
 	.O_CLK_EN(W_CLK_12288M_EN),
@@ -387,7 +393,7 @@ dkong_hv_count hv
 	.H_SYNCn(O_VGA_H_SYNCn),
 	.V_SYNCn(O_VGA_V_SYNCn)
 );
-         
+
 //========    OBJ (VIDEO)    =====================================================
 
 dkong_obj obj
@@ -416,7 +422,9 @@ dkong_obj obj
 
 	.DL_ADDR(DL_ADDR),
 	.DL_WR(DL_WR),
-	.DL_DATA(DL_DATA)
+	.DL_DATA(DL_DATA),
+
+	.flip_screen(flip_screen)
 );
 
 dkong_vram vram

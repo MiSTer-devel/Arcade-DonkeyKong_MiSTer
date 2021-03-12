@@ -146,7 +146,10 @@ localparam CONF_STR = {
 	"A.DKONG;;",
 	"H0OJK,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"H1H0O2,Orientation,Vert,Horz;",
-	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",  
+	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
+	"H1O7,Flip Screen,Off,On;",
+	"OOS,Analog Video H-Pos,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;",
+        "OTV,Analog Video V-Pos,0,1,2,3,4,5,6,7;",
 	"-;",
 	"DIP;",
 	"-;",
@@ -390,6 +393,10 @@ dkong_top dkong(
 	.I_PESTPLCE(mod_pestplace),
 
 	.O_PIX(clk_pix),
+
+	.flip_screen(status[7]),
+	.H_OFFSET(status[28:24]),
+	.V_OFFSET(status[31:29]),
 
 	.O_SOUND_DAT(audio),
 	.O_VGA_R(r),

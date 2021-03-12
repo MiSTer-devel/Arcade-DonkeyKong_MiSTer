@@ -51,7 +51,9 @@ module dkong_obj(
 
 	input [15:0] DL_ADDR,
 	input DL_WR,
-	input [7:0] DL_DATA
+	input [7:0] DL_DATA,
+
+	input flip_screen
 	);
 
 //---- Debug ---------
@@ -80,7 +82,7 @@ reg    [3:0]W_5F2_Q;
 always@(negedge CLK_24M) W_5F2_Q <= W_5F2_QB;
 
 //----------  FLIP ----------------------------------------------------
-wire   W_FLIP_1  = ~I_FLIPn;                          // INV  
+wire   W_FLIP_1  = ~I_FLIPn ^ flip_screen;            // INV
 wire   W_FLIP_2  =  W_FLIP_1 ^ 1'b1;                  // INV => XOR
 wire   W_FLIP_3  = ~W_FLIP_2;                         // INV => XOR => INV 
 wire   W_FLIP_4  =  W_FLIP_3 | W_5F2_Q[0];
@@ -104,7 +106,7 @@ reg    [7:0]W_6N_Q;
 always@(posedge CLK_24M) if (CLK_12M_EN) W_6N_Q <= I_OBJ_D;
 
 wire   [7:0]W_78R_A = W_6N_Q;
-wire   [7:0]W_78R_B = {4'b1111,I_FLIPn,W_FLIP_1,W_FLIP_1,1'b1}; 
+wire   [7:0]W_78R_B = {4'b1111,I_FLIPn ^ flip_screen,W_FLIP_1,W_FLIP_1,1'b1}; 
 
 wire   [8:0]W_78R_Q = W_78R_A + W_78R_B + 8'b00000001;
 
