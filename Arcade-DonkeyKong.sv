@@ -102,7 +102,7 @@ module emu
 	output  [7:0] DDRAM_BE,
 	output        DDRAM_WE,
 
-`ifdef USE_SDRAM	
+`ifdef USE_SDRAM
 	output        SDRAM_CLK,
 	output        SDRAM_CKE,
 	output [12:0] SDRAM_A,
@@ -141,9 +141,7 @@ wire [1:0] ar = status[20:19];
 assign VIDEO_ARX = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd4 : 8'd3) : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd3 : 8'd4) : 12'd0;
 
-
-
-`include "build_id.v" 
+`include "build_id.v"
 localparam CONF_STR = {
 	"A.DKONG;;",
 	"H0OJK,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
@@ -235,7 +233,7 @@ reg mod_pestplace=0;
 always @(posedge clk_sys) begin
 	reg [7:0] mod = 0;
 	if (ioctl_wr & (ioctl_index==1)) mod <= ioctl_dout;
-	
+
 	mod_dk <= (mod == 0);
 	mod_dkjr <= (mod == 1);
 	mod_dk3 <= (mod == 2);
@@ -365,7 +363,7 @@ dpram #(16,8) wav_rom (
 
 
 
-dkong_top dkong(				   
+dkong_top dkong(
 	.I_CLK_24576M(clk_sys),
 	.I_RESETn(~reset),
 	.I_U1(~m_up),
@@ -373,7 +371,7 @@ dkong_top dkong(
 	.I_L1(~m_left),
 	.I_R1(~m_right),
 	.I_J1(~m_fire),
-	
+
 	.I_U2(~m_up_2),
 	.I_D2(~m_down_2),
 	.I_L2(~m_left_2),

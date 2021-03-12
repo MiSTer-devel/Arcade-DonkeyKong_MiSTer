@@ -108,5 +108,5 @@ assign V_SYNCn    = ~V_CNT_r[8];
 assign V_BLANKn   = ~V_BLANK;
 assign C_BLANKn   = ~(H_BLANK | V_BLANK);
 assign VF_CNT[7:0]= V_CNT ^ {8{V_FLIP}};
- 
-endmodule 
+
+endmodule
