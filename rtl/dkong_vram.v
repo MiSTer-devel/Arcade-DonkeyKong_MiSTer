@@ -57,7 +57,7 @@ wire   [7:0]WO_DB;
 
 assign O_DB       = I_VRAM_RDn ? 8'h00: WO_DB;
 
-wire   [4:0]W_HF_CNT  = I_H_CNT[8:4]^{I_FLIP,I_FLIP,I_FLIP,I_FLIP,I_FLIP};
+wire   [4:0]W_HF_CNT  = I_H_CNT[8:4]^{5{I_FLIP}};
 wire   [9:0]W_cnt_AB  = {I_VF_CNT[7:3],W_HF_CNT[4:0]};
 wire   [9:0]W_vram_AB = I_CMPBLK ? W_cnt_AB : I_AB ;
 wire        W_vram_CS = I_CMPBLK ? 1'b0     : I_VRAM_WRn & I_VRAM_RDn;
@@ -159,7 +159,7 @@ begin
    if(I_H_CNT[9] == 1'b0)
       W_VRAMBUSY <= 1'b1;
    else if (CLK_EN & I_H_CNT[2:0] == 3'b0111)
-      W_VRAMBUSY <= I_H_CNT[4]&I_H_CNT[5]&I_H_CNT[6]&I_H_CNT[7];
+      W_VRAMBUSY <= &I_H_CNT[7:4];
 end
 
 //------  PARTS 2K2 ----------------------------------------------
