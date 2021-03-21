@@ -2618,4 +2618,17 @@ ffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff
 		</part>
 	</rom>
+	<rom index="3" md5="none">
+		<part>
+		00 00 61 00 00 AA 94 76
+		00 00 60 B8 00 03 50 00
+		00 00 76 41 00 01 00 00
+		00 00 76 21 00 01 00 00
+		00 00 76 01 00 01 07 07
+		00 00 75 E1 00 01 06 06
+		00 00 75 C1 00 01 05 05
+		00 00 75 A1 00 01 00 00
+		</part>
+	</rom>
+	<nvram index="4" size="179"/>
 </misterromdescription>

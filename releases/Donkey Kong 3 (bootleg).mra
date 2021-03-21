@@ -10,7 +10,7 @@
 	<category>Platform / Mario Bros.</category>
 	<rbf>DonkeyKong</rbf>
 
-	<buttons names="Spray,Start 1P,Start 2P,Coin" default="A,Start,Select,R"/>
+	<buttons names="Spray,Start 1P,Start 2P,Coin,Pause" default="A,Start,Select,R,L"/>
 
 	<rom index="1"><part>02</part></rom>
 	<rom index="0" zip="dkong3.zip|dkong3b.zip" md5="403f810061c5eda8651b5284af4b92ce" type="merged|nonmerged">
@@ -42,4 +42,13 @@
 		<part repeat="2816">00</part>
 
 	</rom>
+	<rom index="3" md5="none">
+		<part>
+		00 00 6B 00 00 AA F3 76
+		00 00 6C 20 00 40 00 00
+		00 00 6C 16 00 04 00 00
+		00 00 68 F3 00 03 01 00
+		</part>
+	</rom>
+	<nvram index="4" size="241"/>
 </misterromdescription>

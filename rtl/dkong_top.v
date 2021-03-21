@@ -62,7 +62,16 @@ module dkong_top
 	output [11:0] SND_ROM_A,
 	input   [7:0] SND_ROM_DO,
 	output [18:0] WAV_ROM_A,
-	input   [7:0] WAV_ROM_DO
+	input   [7:0] WAV_ROM_DO,
+
+	input				pause,
+
+	//- HISCORE
+	input [15:0]	hs_address,
+	output [7:0]	hs_data_out,
+	input  [7:0]	hs_data_in,
+	input 			hs_write,
+	input 			hs_access
 
 );
 
@@ -145,7 +154,7 @@ wire   W_CPU_CLK_EN_N = W_H_CNT[1:0] == 2'b11;
 	.CLK(I_CLK_24576M),
 	.CEN_p(W_CPU_CLK_EN_N),
 	.CEN_n(W_CPU_CLK_EN_P),
-	.WAIT_n(W_CPU_WAITn | (W_CPU_IORQn & W_CPU_MREQn)),
+	.WAIT_n((W_CPU_WAITn | (W_CPU_IORQn & W_CPU_MREQn)) & (~pause)),
 	.INT_n(1'b1),
 	.NMI_n(W_CPU_NMIn),
 	.BUSRQ_n(~W_CPU_BUSRQ),
@@ -202,16 +211,37 @@ always @(*) begin
 end
 assign WB_ROM_DO = MAIN_CPU_DO;
 
+// HIGHSCORES
+wire hs_cs_RAM1  = hs_address[15:11] == 5'b01100;
+wire hs_cs_RAM3  = hs_address[15:10] == 6'b011010;
+wire hs_cs_RAMDK3  = hs_address[15:10] == 6'b011011;
+wire hs_cs_VRAM = hs_address[15:12] == 4'b0111;
+wire [7:0]	hs_data_out_RAM1;
+wire [7:0]	hs_data_out_RAM3;
+wire [7:0]	hs_data_out_RAMDK3;
+wire [7:0]	hs_data_out_VRAM;
+assign hs_data_out = hs_cs_RAM1 ? hs_data_out_RAM1 :
+							hs_cs_RAM3 ? hs_data_out_RAM3 :
+							hs_cs_RAMDK3 ? hs_data_out_RAMDK3 :
+							hs_cs_VRAM ? hs_data_out_VRAM : 8'h0;
+
 //========   INT RAM Interface  ==================================================
 
-ram_1024_8 U_3C4C
+ram_1024_8_8 U_3C4C
 (
-	.I_CLK(I_CLK_24576M),
-	.I_ADDR(W_CPU_A[9:0]),
-	.I_D(WI_D),
-	.I_CE(~W_RAM1_CSn),
-	.I_WE(~W_CPU_WRn),
-	.O_D(W_RAM1_DO)
+	.I_CLKA(I_CLK_24576M),
+	.I_ADDRA(W_CPU_A[9:0]),
+	.I_DA(WI_D),
+	.I_CEA(~W_RAM1_CSn),
+	.I_WEA(~W_CPU_WRn),
+	.O_DA(W_RAM1_DO),
+
+	.I_CLKB(I_CLK_24576M),
+	.I_ADDRB(hs_address[9:0]),
+	.I_DB(hs_data_in),
+	.I_CEB(hs_cs_RAM1),
+	.I_WEB(hs_write),
+	.O_DB(hs_data_out_RAM1)
 );
 
 ram_1024_8 U_3B4B
@@ -224,14 +254,21 @@ ram_1024_8 U_3B4B
 	.O_D(W_RAM2_DO)
 );
 
-ram_1024_8 U_DK3BRAM
+ram_1024_8_8 U_DK3BRAM
 (
-	.I_CLK(I_CLK_24576M),
-	.I_ADDR(W_CPU_A[9:0]),
-	.I_D(WI_D),
-	.I_CE(~W_RAMDK3B_CSn),
-	.I_WE(~W_CPU_WRn),
-	.O_D(W_RAMDK3B_DO)
+	.I_CLKA(I_CLK_24576M),
+	.I_ADDRA(W_CPU_A[9:0]),
+	.I_DA(WI_D),
+	.I_CEA(~W_RAMDK3B_CSn),
+	.I_WEA(~W_CPU_WRn),
+	.O_DA(W_RAMDK3B_DO),
+
+	.I_CLKB(I_CLK_24576M),
+	.I_ADDRB(hs_address[9:0]),
+	.I_DB(hs_data_in),
+	.I_CEB(hs_cs_RAMDK3),
+	.I_WEB(hs_write),
+	.O_DB(hs_data_out_RAMDK3)
 );
 
 //=============== Sprite DMA ======================
@@ -246,15 +283,24 @@ wire [9:0]W_DMA_AB;
 wire [7:0]W_DMA_DB;
 wire W_DMA_CEB;
 
+wire hs_access_RAM3 = hs_access & hs_cs_RAM3;
+wire [9:0]RAM3_ADDR = hs_access_RAM3 ? hs_address[9:0] : W_CPU_A[9:0];
+wire      RAM3_CE = hs_access_RAM3 ? hs_cs_RAM3 : ~W_RAM3_CSn;
+wire      RAM3_WE = hs_access_RAM3 ? hs_write : ~W_CPU_WRn;
+wire [7:0]RAM3_DIN = hs_access_RAM3 ? hs_data_in : WI_D;
+wire [7:0]RAM3_DOUT;
+assign W_RAM3_DO = ~hs_access_RAM3 ? RAM3_DOUT : 8'b0;
+assign hs_data_out_RAM3 = hs_access_RAM3 ? RAM3_DOUT : 8'b0;
+
 ram_1024_8_8 U_3A4A
 (
 	//   A Port
 	.I_CLKA(I_CLK_24576M),
-	.I_ADDRA(W_CPU_A[9:0]),
-	.I_DA(WI_D),
-	.I_CEA(~W_RAM3_CSn),
-	.I_WEA(~W_CPU_WRn),
-	.O_DA(W_RAM3_DO),
+	.I_ADDRA(RAM3_ADDR),
+	.I_DA(RAM3_DIN),
+	.I_CEA(RAM3_CE),
+	.I_WEA(RAM3_WE),
+	.O_DA(RAM3_DOUT),
 	//   B Port
 	.I_CLKB(I_CLK_24576M),
 	.I_ADDRB(W_DMA_A),
@@ -442,7 +488,12 @@ dkong_vram vram
 
 	.DL_ADDR(DL_ADDR),
 	.DL_WR(DL_WR),
-	.DL_DATA(DL_DATA)
+	.DL_DATA(DL_DATA),
+	
+	.hs_address(hs_address),
+	.hs_data_in(hs_data_in),
+	.hs_data_out(hs_data_out_VRAM),
+	.hs_write(hs_cs_VRAM & hs_write)
 );
 
 wire W_RADARn;
