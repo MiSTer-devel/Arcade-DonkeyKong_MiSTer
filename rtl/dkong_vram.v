@@ -47,7 +47,13 @@ module dkong_vram(
 
 	input [15:0] DL_ADDR,
 	input DL_WR,
-	input [7:0] DL_DATA
+	input [7:0] DL_DATA,
+	
+	//- HISCORE
+	input [15:0]	hs_address,
+	output [7:0]	hs_data_out,
+	input  [7:0]	hs_data_in,
+	input 			hs_write
 	);
 
 //---- Debug ----
@@ -66,14 +72,21 @@ wire        W_2S4     = I_CMPBLK ? 1'b0     : 1'b1 ;
 wire CLK_2M = ~(&I_H_CNT[3:1]) /* synthesis keep */;
 wire CLK_2M_EN = CLK_EN & I_H_CNT[3:0] == 4'b1111/* synthesis keep */;
 
-ram_1024_8 U_2PR(
+ram_1024_8_8 U_2PR(
 
-.I_CLK(CLK_24M),
-.I_ADDR(W_vram_AB),
-.I_D(WI_DB),
-.I_CE(~W_vram_CS),
-.I_WE(~I_VRAM_WRn),
-.O_D(WO_DB)
+.I_CLKA(CLK_24M),
+.I_ADDRA(W_vram_AB),
+.I_DA(WI_DB),
+.I_CEA(~W_vram_CS),
+.I_WEA(~I_VRAM_WRn),
+.O_DA(WO_DB),
+
+.I_CLKB(CLK_24M),
+.I_ADDRB(hs_address[9:0]),
+.I_DB(hs_data_in),
+.I_CEB(1'b1),
+.I_WEB(hs_write),
+.O_DB(hs_data_out)
 
 );
 

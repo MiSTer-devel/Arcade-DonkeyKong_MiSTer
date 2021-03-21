@@ -24,7 +24,9 @@
 --
 -- Joystick support.
 -- 
--- 
+-- High score save/load - To save your scores use the 'Save Settings' option in the OSD.
+-- * Warning: For Donkey Kong 3 (bootleg) Scores are only loaded when core starts, using reset will return scores to factory settings *
+--
 ---------------------------------------------------------------------------------
 
                                 *** Attention ***

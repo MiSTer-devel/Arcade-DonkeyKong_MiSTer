@@ -1,4 +1,3 @@
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/sdram.sv
 set_global_assignment -name VERILOG_FILE rtl/dkong_top.v
 set_global_assignment -name VERILOG_FILE rtl/dkong_dma.v
 set_global_assignment -name VHDL_FILE rtl/dpram.vhd
@@ -16,4 +15,5 @@ set_global_assignment -name VERILOG_FILE rtl/dkong_adec.v
 set_global_assignment -name VERILOG_FILE rtl/radarscp_stars.v
 set_global_assignment -name QIP_FILE rtl/t48/T48.qip
 set_global_assignment -name QIP_FILE rtl/T80/T80.qip
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/hiscore.sv"
 set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-DonkeyKong.sv"

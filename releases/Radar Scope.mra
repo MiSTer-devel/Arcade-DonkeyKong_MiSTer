@@ -16,7 +16,7 @@
 		<dip bits="4,6"    name="Coins" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P"/>
 		<dip bits="7"      name="Cabinet" ids="Cocktail,Upright"/>
 	</switches>
-	<buttons names="Shoot,Start 1P,Start 2P,Coin" default="A,Start,Select,R"/>
+	<buttons names="Shoot,Start 1P,Start 2P,Coin,Pause" default="A,Start,Select,R,L"/>
 	<rom index="0" zip="radarscp.zip" md5="4b295564ddde03ac8b9f98475a36caf8">
 		<part crc="40949e0d" name="trs2c5fc"/>
 		<part crc="afa8c49f" name="trs2c5gc"/>
@@ -43,4 +43,17 @@
 	<rom index="1">
 		<part>03</part>
 	</rom>
+	<rom index="3" md5="none">
+		<part>
+		00 00 63 07 00 A2 00 FC
+		00 00 60 A8 00 03 50 00
+		00 00 76 41 00 01 00 00
+		00 00 76 21 00 01 00 00
+		00 00 76 01 00 01 07 07
+		00 00 75 E1 00 01 06 06
+		00 00 75 C1 00 01 05 05
+		00 00 75 A1 00 01 00 00
+		</part>
+	</rom>
+	<nvram index="4" size="171"/>
 </misterromdescription>
