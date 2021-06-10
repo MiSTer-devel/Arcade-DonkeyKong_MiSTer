@@ -1,59 +1,74 @@
 <misterromdescription>
-	<name>Donkey Kong (US set 1)</name>
-	<mameversion>0220</mameversion>
-	<setname>dkong</setname>
-	<mratimestamp>20200427161917</mratimestamp>
+	<name>Donkey Kong</name>
+	<region>USA</region>
+	<homebrew>no</homebrew>
+	<bootleg>no</bootleg>
+	<version>Set 1</version>
+	<alternative></alternative>
+	<platform></platform>
+	<series>Donkey Kong</series>
 	<year>1981</year>
-	<manufacturer>Nintendo of America</manufacturer>
-	<category>Maze / Monkeys</category>
-	<category>Platform</category>
-	<category>Platform / Mario Bros.</category>
-	<rbf>DonkeyKong</rbf>
-	<switches default="80" base="8">
-		<dip bits="0,1"    name="Lives" ids="3,4,5,6"/>
-		<dip bits="2,3"    name="Bonus Life" ids="7K,10K,15K,20K"/>
-		<dip bits="4,6"    name="Coins" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P"/>
-		<dip bits="7"      name="Cabinet" ids="Cocktail,Upright"/>
-	</switches>
-	<rom index="0" zip="dkong.zip" md5="2b33a8e64b3ac1d361cd6d06cabc4f7c">
+	<manufacturer>Nintendo</manufacturer>
+	<category>Platform - Climb</category>
+
+	<setname>dkong</setname>
+	<parent>dkong</parent>
+	<mameversion>0220</mameversion>
+	<rbf>donkeykong</rbf>
+	<about></about>
+
+	<resolution>15kHz</resolution>
+	<rotation>vertical (cw)</rotation>
+	<flip>yes</flip>
+
+	<players>2 (alternating)</players>
+	<joystick>4-way</joystick>
+	<special_controls></special_controls>
+	<num_buttons>1</num_buttons>
+	<button_names></button_names>
+
+	<switches base="8" default="80">
+		<dip bits="0,1" ids="3,4,5,6" name="Lives"></dip>
+		<dip bits="2,3" ids="7K,10K,15K,20K" name="Bonus Life"></dip>
+		<dip bits="4,6" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P" name="Coins"></dip>
+		<dip bits="7" ids="Cocktail,Upright" name="Cabinet"></dip>
+		</switches>
+
+	<rom index="1"></rom>
+	<rom index="0" md5="2b33a8e64b3ac1d361cd6d06cabc4f7c" zip="dkong.zip">
 		<!-- Main CPU 32k -->
-		<part crc="ba70b88b" name="c_5et_g.bin"/>
-		<part crc="5ec461ec" name="c_5ct_g.bin"/>
-		<part crc="1c97d324" name="c_5bt_g.bin"/>
-		<part crc="b9005ac0" name="c_5at_g.bin"/>
-		<part crc="ba70b88b" name="c_5et_g.bin"/>
-		<part crc="5ec461ec" name="c_5ct_g.bin"/>
-		<part crc="1c97d324" name="c_5bt_g.bin"/>
-		<part crc="b9005ac0" name="c_5at_g.bin"/>
-
+		<part crc="ba70b88b" name="c_5et_g.bin"></part>
+		<part crc="5ec461ec" name="c_5ct_g.bin"></part>
+		<part crc="1c97d324" name="c_5bt_g.bin"></part>
+		<part crc="b9005ac0" name="c_5at_g.bin"></part>
+		<part crc="ba70b88b" name="c_5et_g.bin"></part>
+		<part crc="5ec461ec" name="c_5ct_g.bin"></part>
+		<part crc="1c97d324" name="c_5bt_g.bin"></part>
+		<part crc="b9005ac0" name="c_5at_g.bin"></part>
 		<!-- GFX1 8k -->
-		<part crc="15e9c5e9" name="v_3pt.bin"/>
-		<part crc="15e9c5e9" name="v_3pt.bin"/>
-		<part crc="12c8c95d" name="v_5h_b.bin"/>
-		<part crc="12c8c95d" name="v_5h_b.bin"/>
-
+		<part crc="15e9c5e9" name="v_3pt.bin"></part>
+		<part crc="15e9c5e9" name="v_3pt.bin"></part>
+		<part crc="12c8c95d" name="v_5h_b.bin"></part>
+		<part crc="12c8c95d" name="v_5h_b.bin"></part>
 		<!-- GFX2 16k -->
-		<part crc="59f8054d" name="l_4m_b.bin"/>
-		<part crc="59f8054d" name="l_4m_b.bin"/>
-		<part crc="672e4714" name="l_4n_b.bin"/>
-		<part crc="672e4714" name="l_4n_b.bin"/>
-		<part crc="feaa59ee" name="l_4r_b.bin"/>
-		<part crc="feaa59ee" name="l_4r_b.bin"/>
-		<part crc="20f2ef7e" name="l_4s_b.bin"/>
-		<part crc="20f2ef7e" name="l_4s_b.bin"/>
-
+		<part crc="59f8054d" name="l_4m_b.bin"></part>
+		<part crc="59f8054d" name="l_4m_b.bin"></part>
+		<part crc="672e4714" name="l_4n_b.bin"></part>
+		<part crc="672e4714" name="l_4n_b.bin"></part>
+		<part crc="feaa59ee" name="l_4r_b.bin"></part>
+		<part crc="feaa59ee" name="l_4r_b.bin"></part>
+		<part crc="20f2ef7e" name="l_4s_b.bin"></part>
+		<part crc="20f2ef7e" name="l_4s_b.bin"></part>
 		<!-- Sound CPU 4k -->
-		<part crc="45a4ed06" name="s_3i_b.bin"/>
-		<part crc="4743fe92" name="s_3j_b.bin"/>
-
+		<part crc="45a4ed06" name="s_3i_b.bin"></part>
+		<part crc="4743fe92" name="s_3j_b.bin"></part>
 		<!-- LUTs 3x256 -->
-		<part crc="e273ede5" name="c-2k.bpr"/>
-		<part crc="e273ede5" name="c-2k.bpr"/>
-		<part crc="d6412358" name="c-2j.bpr"/>
-		<part crc="d6412358" name="c-2j.bpr"/>
-		<part crc="b869b8f5" name="v-5e.bpr"/>
+		<part crc="e273ede5" name="c-2k.bpr"></part>
+		<part crc="e273ede5" name="c-2k.bpr"></part>
+		<part crc="d6412358" name="c-2j.bpr"></part>
+		<part crc="d6412358" name="c-2j.bpr"></part>
+		<part crc="b869b8f5" name="v-5e.bpr"></part>
 		<part repeat="2816">00</part>
-
 		<!-- WAWs -->
 		<part>
 8080808080807f7f7f7f7f7f7f808080
@@ -2617,7 +2632,8 @@ ffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff
 		</part>
-	</rom>
+		</rom>
+	<rom index="2"></rom>
 	<rom index="3" md5="none">
 		<part>
 		00 00 61 00 00 AA 94 76
@@ -2629,6 +2645,12 @@ ffffffffffffffffffffffffffffffff
 		00 00 75 C1 00 01 05 05
 		00 00 75 A1 00 01 00 00
 		</part>
-	</rom>
-	<nvram index="4" size="179"/>
+		</rom>
+	<rom index="4"></rom>
+
+	<nvram index="4" size="179"></nvram>
+
+	<remark></remark>
+
+	<mratimestamp>20210430005030</mratimestamp>
 </misterromdescription>
