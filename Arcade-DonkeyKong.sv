@@ -205,6 +205,10 @@ localparam CONF_STR = {
 	"-;",
 	"DIP;",
 	"-;",
+	"P1,Pause options;",
+	"P1OL,Pause when OSD is open,On,Off;",
+	"P1OM,Dim video after 10s,On,Off;",
+	"-;",
 
 	"R0,Reset;",
 	"J1,Jump,Start 1P,Start 2P,Coin,Pause;",
@@ -317,38 +321,21 @@ wire m_coin   =  joy[7];
 wire m_pause   = joy[8];
 
 // PAUSE SYSTEM
-reg				pause;									// Pause signal (active-high)
-reg				pause_toggle = 1'b0;					// User paused (active-high)
-reg [31:0]		pause_timer;							// Time since pause
-reg [31:0]		pause_timer_dim = 31'hE4E1C00;	// Time until screen dim (10 seconds @ ~24Mhz)
-reg 				dim_video = 1'b0;						// Dim video output (active-high)
-assign pause = hs_access | pause_toggle;
-assign dim_video = (pause_timer >= pause_timer_dim) ? 1'b1 : 1'b0;
+wire pause_cpu;
 
-always @(posedge clk_sys) begin
-	// User pause toggle
-	reg old_pause;
-	old_pause <= m_pause;
-	if(~old_pause & m_pause) pause_toggle <= ~pause_toggle;
-	// Track time paused
-	if(pause_toggle)
-	begin
-		if(pause_timer<pause_timer_dim)
-		begin
-			pause_timer <= pause_timer + 1'b1;
-		end
-	end
-	else
-	begin
-		pause_timer <= 1'b0;
-	end
-end
+wire [11:0] rgb_out;
 
+pause #(4,4,4,25) pause (
+  .*,
+  .reset(reset),
+  .user_button(m_pause),
+  .pause_request(),
+  .options(~status[22:21])
+);
 
 wire hblank, vblank;
 wire hs_n, vs_n;
 wire [3:0] r,g,b;
-wire [11:0] rgb_out = dim_video ? {r >> 1,g >> 1, b >> 1} : {r,g,b};
 
 reg ce_pix;
 always @(posedge clk_49) begin
@@ -498,7 +485,7 @@ dkong_top dkong(
 	.WAV_ROM_A(wav_rom_a),
 	.WAV_ROM_DO( wav_rom_do),
 
-	.pause(pause),
+	.paused(pause_cpu),
 
 	.hs_address(hs_address),
 	.hs_data_in(hs_data_in),
