@@ -68,7 +68,7 @@ module dkong_top
 	output [18:0] WAV_ROM_A,
 	input   [7:0] WAV_ROM_DO,
 
-	input				pause,
+	input				paused,
 
 	//- HISCORE
 	input [15:0]	hs_address,
@@ -158,7 +158,7 @@ wire   W_CPU_CLK_EN_N = W_H_CNT[1:0] == 2'b11;
 	.CLK(I_CLK_24576M),
 	.CEN_p(W_CPU_CLK_EN_N),
 	.CEN_n(W_CPU_CLK_EN_P),
-	.WAIT_n((W_CPU_WAITn | (W_CPU_IORQn & W_CPU_MREQn)) & (~pause)),
+	.WAIT_n((W_CPU_WAITn | (W_CPU_IORQn & W_CPU_MREQn)) & (~paused)),
 	.INT_n(1'b1),
 	.NMI_n(W_CPU_NMIn),
 	.BUSRQ_n(~W_CPU_BUSRQ),
@@ -565,7 +565,7 @@ dkong_col_pal cpal
 );
 
 dkong_soundboard dkong_soundboard(
-	.W_CLK_24576M(W_CLK_24576M),
+	.W_CLK_24576M(W_CLK_24576M & ~paused),
 	.W_RESETn(W_RESETn),
 	.I_DKJR(I_DKJR),
 	.O_SOUND_DAT(O_SOUND_DAT),
