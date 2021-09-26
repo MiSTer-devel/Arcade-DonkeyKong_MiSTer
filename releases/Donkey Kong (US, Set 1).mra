@@ -32,7 +32,7 @@
 		<dip bits="2,3" ids="7K,10K,15K,20K" name="Bonus Life"></dip>
 		<dip bits="4,6" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P" name="Coins"></dip>
 		<dip bits="7" ids="Cocktail,Upright" name="Cabinet"></dip>
-		</switches>
+	</switches>
 
 	<rom index="1"></rom>
 	<rom index="0" md5="2b33a8e64b3ac1d361cd6d06cabc4f7c" zip="dkong.zip">
@@ -2632,10 +2632,11 @@ ffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff
 		</part>
-		</rom>
+	</rom>
 	<rom index="2"></rom>
 	<rom index="3" md5="none">
 		<part>
+		00 00 00 00 00 FF 00 02 00 02 00 01 00 FF 02 00
 		00 00 61 00 00 AA 94 76
 		00 00 60 B8 00 03 50 00
 		00 00 76 41 00 01 00 00
@@ -2645,7 +2646,7 @@ ffffffffffffffffffffffffffffffff
 		00 00 75 C1 00 01 05 05
 		00 00 75 A1 00 01 00 00
 		</part>
-		</rom>
+	</rom>
 	<rom index="4"></rom>
 
 	<nvram index="4" size="179"></nvram>

@@ -32,11 +32,11 @@
 		<dip bits="2,3" ids="7K,10K,15K,20K" name="Bonus Life"></dip>
 		<dip bits="4,6" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P" name="Coins"></dip>
 		<dip bits="7" ids="Cocktail,Upright" name="Cabinet"></dip>
-		</switches>
+	</switches>
 
 	<rom index="1">
 		<part>03</part>
-		</rom>
+	</rom>
 	<rom index="0" md5="4b295564ddde03ac8b9f98475a36caf8" zip="radarscp.zip">
 		<part crc="40949e0d" name="trs2c5fc"></part>
 		<part crc="afa8c49f" name="trs2c5gc"></part>
@@ -59,11 +59,22 @@
 		<part repeat="768">00</part>
 		<part crc="0eca8d6b" name="trs2v3ec"></part>
 		<part repeat="40960">00</part>
-		</rom>
+	</rom>
 	<rom index="2"></rom>
+
 	<rom index="3" md5="none">
-		
-		</rom>
+		<part>
+		00 00 00 00 00 FF 00 02 00 02 00 01 00 FF 02 00
+		00 00 63 07 00 A2 00 FC
+		00 00 60 A8 00 03 50 00
+		00 00 76 41 00 01 00 00
+		00 00 76 21 00 01 00 00
+		00 00 76 01 00 01 07 07
+		00 00 75 E1 00 01 06 06
+		00 00 75 C1 00 01 05 05
+		00 00 75 A1 00 01 00 00
+		</part>
+	</rom>
 	<rom index="4"></rom>
 
 	<nvram index="4" size="171"></nvram>

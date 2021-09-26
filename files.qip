@@ -16,5 +16,5 @@ set_global_assignment -name VERILOG_FILE rtl/radarscp_stars.v
 set_global_assignment -name QIP_FILE rtl/t48/T48.qip
 set_global_assignment -name QIP_FILE rtl/T80/T80.qip
 set_global_assignment -name VERILOG_FILE "rtl/pause.v"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/hiscore.sv"
+set_global_assignment -name VERILOG_FILE "rtl/hiscore.v"
 set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-DonkeyKong.sv"
