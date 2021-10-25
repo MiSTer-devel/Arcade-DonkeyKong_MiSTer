@@ -172,6 +172,7 @@ module emu
 	input         OSD_STATUS
 );
 
+assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 
@@ -200,10 +201,10 @@ localparam CONF_STR = {
 	"H1O7,Flip Screen,Off,On;",
 	"OOS,Analog Video H-Pos,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;",
         "OTV,Analog Video V-Pos,0,1,2,3,4,5,6,7;",
-	"H2OV,Autosave Hiscores,Off,On;",
+	"H2ON,Autosave Hiscores,Off,On;",
 	"P1,Pause options;",
-	"P1OT,Pause when OSD is open,On,Off;",
-	"P1OU,Dim video after 10s,On,Off;",
+	"P1OL,Pause when OSD is open,On,Off;",
+	"P1OM,Dim video after 10s,On,Off;",
 	"-;",
 	"DIP;",
 	"-;",
@@ -311,8 +312,8 @@ wire m_left   = joy[1];
 wire m_right  = joy[0];
 wire m_fire   = joy[4];
 
-wire m_start1 =  joy[5] ;
-wire m_start2 =  joy[6] ;
+wire m_start1 =  joy[5];
+wire m_start2 =  joy[6];
 wire m_coin   =  joy[7];
 wire m_pause   = joy[8];
 
@@ -326,7 +327,7 @@ pause #(4,4,4,25) pause (
   .reset(reset),
   .user_button(m_pause),
   .pause_request(),
-  .options(~status[30:29])
+  .options(~status[22:21])
 );
 
 wire hblank, vblank;
@@ -511,7 +512,7 @@ hiscore #(
 	.*,
 	.clk(clk_sys),
 	.paused(pause_cpu),
-	.autosave(status[31]),
+	.autosave(status[23]),
 	.ram_address(hs_address),
 	.data_from_ram(hs_data_out),
 	.data_to_ram(hs_data_in),
