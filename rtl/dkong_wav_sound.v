@@ -36,9 +36,16 @@ input  [2:0]I_SW;
 
 parameter Sample_cnt = 2228;
 
-parameter Walk_cnt = 13'h07d0; // 10000 - 10FFF
-parameter Jump_cnt = 13'h1e20; // 11000 - 12FFF
-parameter Foot_cnt = 13'h1750; // 13000 - 14FFF
+parameter Wlk1_adr = 16'h0000; // 10000 - 107FF
+parameter Wlk1_cnt = 16'h07d0; // 10000 - 107CF
+parameter Wlk2_adr = 16'h0800; // 10800 - 10FFF
+parameter Wlk2_cnt = 16'h07d0; // 10800 - 10FCF
+parameter Wlk3_adr = 16'h4800; // 14800 - 14FFF
+parameter Wlk3_cnt = 16'h07d0; // 14800 - 14FCF
+parameter Jump_adr = 16'h1000; // 11000 - 12FFF
+parameter Jump_cnt = 16'h1e20; // 11000 - 12E1F
+parameter Foot_adr = 16'h3000; // 13000 - 14FFF
+parameter Foot_cnt = 16'h1750; // 13000 - 1474F
 
 reg   [11:0]sample;
 reg   sample_pls;
@@ -55,77 +62,78 @@ begin
 end
 
 //-----------  WALK SOUND ------------------------------------------
-reg    [1:0]sw0,sw1,sw2;
 reg    [2:0]status0;
 reg    [2:0]status1;
-reg    [1:0]status2;
-reg    [12:0]ad_cnt;
-reg    [12:0]end_cnt;
+reg    [15:0]ad_cnt;
+reg    [15:0]end_cnt;
+reg    [1:0]steps_cnt;
+reg    old_foot_rq;
+reg    old_walk_rq;
+reg    old_jump_rq;
+wire   foot_rq = I_SW[2];
+wire   walk_rq = I_SW[0];
+wire   jump_rq = I_SW[1];
 
 always@(posedge I_CLK or negedge I_RSTn)
 begin
   if(! I_RSTn)begin
-    sw0 <= 0;
-    sw1 <= 0;
-    sw2 <= 0;
     status0 <= 0;
     status1 <= 0;
-    status2 <= 1;
     end_cnt <= Foot_cnt;
     ad_cnt  <= 0;
+	steps_cnt <= 2'b01;
   end else begin
-    sw0[0] <= ~I_SW[2]; // Foot
-    sw0[1] <= sw0[0];
-    status0[0] <= ~sw0[1]&sw0[0];
-    sw1[0] <= ~I_SW[0]; // Walk
-    sw1[1] <= sw1[0];
-    status0[1] <= ~sw1[1]&sw1[0];
-    sw2[0] <= ~I_SW[1]; // Jump
-    sw2[1] <= sw2[0];
-    status0[2] <= ~sw2[1]&sw2[0];
+    status0[0] = ~old_foot_rq & foot_rq;
+    old_foot_rq = foot_rq;
+    status0[1] <= ~old_walk_rq & walk_rq;
+    old_walk_rq = walk_rq;
+    status0[2] <= ~old_jump_rq & jump_rq;
+    old_jump_rq = jump_rq;
     if(status0 > status1)begin
-      ad_cnt <= 0;
-  	 if(status0[2])begin
-	   status1 <= 3'b111;
-        status2 <= 2'b11;
+      if(status0[2])begin
+        status1 <= 3'b111;
+        ad_cnt <= Jump_adr;
         end_cnt <= Jump_cnt;
-      end	else if(status0[1])begin
+		steps_cnt <= 2'b01;
+      end else if(status0[1])begin
         status1 <= 3'b011;
-        status2 <= 2'b10;
-        end_cnt <= Walk_cnt;
-      end	else begin
+		case (steps_cnt)
+			2'b01: begin
+				ad_cnt <= Wlk1_adr;
+				end_cnt <= Wlk1_cnt;
+				steps_cnt <= 2'b10;
+				end
+			2'b10: begin
+				ad_cnt <= Wlk2_adr;
+				end_cnt <= Wlk2_cnt;
+				steps_cnt <= 2'b11;
+				end
+			2'b11: begin
+				ad_cnt <= Wlk3_adr;
+				end_cnt <= Wlk3_cnt;
+				steps_cnt <= 2'b01;
+				end
+		endcase
+      end else begin
         status1 <= 3'b001;
-        status2 <= 2'b01;
+        ad_cnt <= Foot_adr;
         end_cnt <= Foot_cnt;
+		steps_cnt <= 2'b01;
       end
     end else begin
       if(sample_pls)begin
-        if(ad_cnt >= end_cnt)begin
+        if(!end_cnt)begin
           status1 <= 3'b000;
-          ad_cnt <= ad_cnt;
         end else begin
-          ad_cnt <= ad_cnt+1'b1 ;
+          end_cnt <= end_cnt-1;
+		  ad_cnt <= ad_cnt+1;
         end
       end
     end
   end
 end
 
-reg   [15:0]wav_ad;
-wire  [3:0]jump_offset = {3'b000,ad_cnt[12]} + 4'h1;
-wire  [3:0]foot_offset = {3'b000,ad_cnt[12]} + 4'h3;
-
-always@(posedge I_CLK)
-begin
-  case(status2)
-    2'b01: wav_ad <= {foot_offset,ad_cnt[11:0]} ;
-    2'b10: wav_ad <= {3'b000,ad_cnt} ;
-    2'b11: wav_ad <= {jump_offset,ad_cnt[11:0]} ;
-    default:;
-  endcase
-end
-
-assign O_ROM_AB  = {3'b001,wav_ad};
+assign O_ROM_AB  = {3'b001,ad_cnt};
 
 
 endmodule
