@@ -35,7 +35,7 @@
 		</switches>
 
 	<rom index="1"></rom>
-	<rom index="0" md5="2b33a8e64b3ac1d361cd6d06cabc4f7c" zip="dkong.zip">
+	<rom index="0" md5="d94da1763113e1716f141de5e6dca8b5" zip="dkong.zip">
 		<!-- Main CPU 32k -->
 		<part crc="ba70b88b" name="c_5et_g.bin"></part>
 		<part crc="5ec461ec" name="c_5ct_g.bin"></part>
@@ -2636,7 +2636,6 @@ ffffffffffffffffffffffffffffffff
 	<rom index="2"></rom>
 	<rom index="3" md5="none">
 		<part>
-		00 00 00 00 00 FF 00 02 00 02 00 01 00 FF 02 00
 		00 00 61 00 00 AA 94 76
 		00 00 60 B8 00 03 50 00
 		00 00 76 41 00 01 00 00
