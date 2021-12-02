@@ -2636,6 +2636,7 @@ ffffffffffffffffffffffffffffffff
 	<rom index="2"></rom>
 	<rom index="3" md5="none">
 		<part>
+		00 00 00 00 00 FF 00 02 00 02 00 01 00 FF 02 00
 		00 00 61 00 00 AA 94 76
 		00 00 60 B8 00 03 50 00
 		00 00 76 41 00 01 00 00
