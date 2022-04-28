@@ -32,7 +32,7 @@ output [18:0]O_ROM_AB;
 input  [7:0]I_ROM_DB;
 
 input  I_CLK,I_RSTn;
-input  [2:0]I_SW; 
+input  [2:1]I_SW; 
 
 parameter Sample_cnt = 2228;
 
@@ -68,10 +68,8 @@ reg    [15:0]ad_cnt;
 reg    [15:0]end_cnt;
 reg    [1:0]steps_cnt;
 reg    old_foot_rq;
-reg    old_walk_rq;
 reg    old_jump_rq;
 wire   foot_rq = I_SW[2];
-wire   walk_rq = I_SW[0];
 wire   jump_rq = I_SW[1];
 
 always@(posedge I_CLK or negedge I_RSTn)
@@ -85,8 +83,6 @@ begin
   end else begin
     status0[0] = ~old_foot_rq & foot_rq;
     old_foot_rq = foot_rq;
-    status0[1] <= ~old_walk_rq & walk_rq;
-    old_walk_rq = walk_rq;
     status0[2] <= ~old_jump_rq & jump_rq;
     old_jump_rq = jump_rq;
     if(status0 > status1)begin

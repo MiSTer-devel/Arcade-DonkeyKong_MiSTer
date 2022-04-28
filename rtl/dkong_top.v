@@ -54,7 +54,7 @@ module dkong_top
 	output O_VGA_V_SYNCn,
 
 	//    SOUND IF
-	output  [7:0] O_SOUND_DAT,
+	output  [15:0] O_SOUND_DAT,
 
 	// EXTERNAL ROMS
 	input  [15:0] DL_ADDR,
