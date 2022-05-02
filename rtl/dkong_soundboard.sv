@@ -98,7 +98,7 @@ dkong_wav_sound Analog_sound
 	.I_SW(I_DKJR ? 2'b00 : W_6H_Q[2:1])
 );
 
-reg [8:0] audio_clk_counter;
+reg[8:0] audio_clk_counter;
 wire audio_clk_en;
 assign audio_clk_en = audio_clk_counter == 0;
 wire signed[15:0] walk_out;
@@ -120,9 +120,8 @@ dk_walk #(.CLOCK_RATE(24576000),.SAMPLE_RATE(48000)) walk (
 );
 
 //  SOUND MIXER (WAV + DIG ) -----------------------
-wire   [9:0]sound_mix = {1'b0, I_DKJR ? 8'd0 : WAV_ROM_DO, 1'b0} + {1'b0, (W_D_S_DAT >> 1) + (W_D_S_DAT >> 3)};
-wire signed[15:0]sound_mix_16_bit = ({sound_mix, 5'b0} - 2**15) + walk_out;
-
+wire[14:0] sound_mix = ({1'b0, I_DKJR ? 15'd0 : WAV_ROM_DO, 6'b0} + {1'b0, (W_D_S_DAT >> 1) + (W_D_S_DAT >> 3), 6'b0});
+wire signed[15:0] sound_mix_16_bit = sound_mix - 2**14 + walk_out;
 assign O_SOUND_DAT = sound_mix_16_bit + 2**15;
 
 endmodule
