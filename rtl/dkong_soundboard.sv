@@ -122,6 +122,7 @@ dk_walk #(.CLOCK_RATE(24576000),.SAMPLE_RATE(48000)) walk (
 //  SOUND MIXER (WAV + DIG ) -----------------------
 wire[14:0] sound_mix = ({1'b0, I_DKJR ? 15'd0 : WAV_ROM_DO, 6'b0} + {1'b0, (W_D_S_DAT >> 1) + (W_D_S_DAT >> 3), 6'b0});
 wire signed[15:0] sound_mix_16_bit = sound_mix - 2**14 + walk_out;
+
 assign O_SOUND_DAT = sound_mix_16_bit + 2**15;
 
 endmodule
