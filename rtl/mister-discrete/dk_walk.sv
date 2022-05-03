@@ -147,9 +147,9 @@ module dk_walk #(
             out <= 0;
         end else if(audio_clk_en)begin
             if(walk_enveloped_band_passed > 0) begin //TODO: hack to simulate diode connection coming from ground
-                out <= (walk_enveloped_band_passed >>> 1) + (walk_enveloped_band_passed >>> 2);
+                out <= walk_enveloped_band_passed + (walk_enveloped_band_passed >>> 1);
             end else begin
-                out <= (walk_enveloped_band_passed >>> 2) + (walk_enveloped_band_passed >>> 3);
+                out <= walk_enveloped_band_passed >>> 1 + (walk_enveloped_band_passed >>> 2);
             end
         end
     end
