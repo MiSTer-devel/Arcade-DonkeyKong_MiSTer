@@ -17,25 +17,27 @@
 //  You should have received a copy of the GNU General Public License along
 //  with this program; if not, write to the Free Software Foundation, Inc.,
 //  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+//
 //============================================================================
+
 module emu
 (
 	//Master input clock
-	input 				CLK_50M,
+	input         CLK_50M,
 
 	//Async reset from top-level module.
 	//Can be used as initial reset.
-	input 				RESET,
+	input         RESET,
 
 	//Must be passed to hps_io module
-	inout [45:0] 	HPS_BUS,
+	inout  [48:0] HPS_BUS,
 
 	//Base video clock. Usually equals to CLK_SYS.
-	output 				CLK_VIDEO,
+	output        CLK_VIDEO,
 
 	//Multiple resolutions are supported using different CE_PIXEL rates.
 	//Must be based on CLK_VIDEO
-	output 				CE_PIXEL,
+	output        CE_PIXEL,
 
 	//Video aspect ratio for HDMI. Most retro systems have ratio 4:3.
 	//if VIDEO_ARX[12] or VIDEO_ARY[12] is set then [11:0] contains scaled size instead of aspect ratio.
@@ -172,6 +174,7 @@ module emu
 	input         OSD_STATUS
 );
 
+assign ADC_BUS  = 'Z;
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
@@ -230,24 +233,25 @@ pll pll
 
 ///////////////////////////////////////////////////
 
-wire [31:0] status;
-wire  [1:0] buttons;
-wire        forced_scandoubler;
-wire        direct_video;
+wire [127:0] status;
+wire   [1:0] buttons;
+wire         forced_scandoubler;
+wire         direct_video;
+wire         video_rotated;
 
-wire        ioctl_download;
-wire        ioctl_upload;
-wire        ioctl_upload_req;
-wire  [7:0] ioctl_index;
-wire        ioctl_wr;
-wire [24:0] ioctl_addr;
-wire  [7:0] ioctl_dout;
-wire  [7:0] ioctl_din;
+wire         ioctl_download;
+wire         ioctl_upload;
+wire         ioctl_upload_req;
+wire   [7:0] ioctl_index;
+wire         ioctl_wr;
+wire  [24:0] ioctl_addr;
+wire   [7:0] ioctl_dout;
+wire   [7:0] ioctl_din;
 
-wire [15:0] joystick_0, joystick_1;
-wire [15:0] joy = joystick_0 | joystick_1;
+wire  [15:0] joystick_0, joystick_1;
+wire  [15:0] joy = joystick_0 | joystick_1;
 
-wire [21:0] gamma_bus;
+wire  [21:0] gamma_bus;
 
 
 hps_io #(.CONF_STR(CONF_STR)) hps_io
@@ -259,6 +263,7 @@ hps_io #(.CONF_STR(CONF_STR)) hps_io
 	.status(status),
 	.status_menumask({~hs_configured,mod_pestplace,direct_video}),
 	.forced_scandoubler(forced_scandoubler),
+	.video_rotated(video_rotated),
 	.gamma_bus(gamma_bus),
 	.direct_video(direct_video),
 
@@ -344,10 +349,12 @@ end
 
 wire no_rotate = status[2] | direct_video | mod_pestplace;
 wire rotate_ccw = 0;
+wire flip = 0;
+
 screen_rotate screen_rotate (.*);
 
 
-arcade_video #(256,12) arcade_video
+arcade_video #(256,12,1) arcade_video
 (
 	.*,
 
