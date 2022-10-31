@@ -300,22 +300,22 @@ always @(posedge clk_sys) begin
 end
 
 // Player inputs
-wire m_up_2     = joy[3];
-wire m_down_2   = joy[2];
-wire m_left_2   = joy[1];
-wire m_right_2  = joy[0];
-wire m_fire_2   = joy[4];
+wire m_up_2    = mod_pestplace ? joystick_1[3] : joy[3];
+wire m_down_2  = mod_pestplace ? joystick_1[2] : joy[2];
+wire m_left_2  = mod_pestplace ? joystick_1[1] : joy[1];
+wire m_right_2 = mod_pestplace ? joystick_1[0] : joy[0];
+wire m_fire_2  = mod_pestplace ? joystick_1[4] : joy[4];
 
-wire m_up     = joy[3];
-wire m_down   = joy[2];
-wire m_left   = joy[1];
-wire m_right  = joy[0];
-wire m_fire   = joy[4];
+wire m_up      = mod_pestplace ? joystick_0[3] : joy[3];
+wire m_down    = mod_pestplace ? joystick_0[2] : joy[2];
+wire m_left    = mod_pestplace ? joystick_0[1] : joy[1];
+wire m_right   = mod_pestplace ? joystick_0[0] : joy[0];
+wire m_fire    = mod_pestplace ? joystick_0[4] : joy[4];
 
 wire m_start1 =  joy[5];
 wire m_start2 =  joy[6];
 wire m_coin   =  joy[7];
-wire m_pause   = joy[8];
+wire m_pause  =  joy[8];
 
 // PAUSE SYSTEM
 wire pause_cpu;
