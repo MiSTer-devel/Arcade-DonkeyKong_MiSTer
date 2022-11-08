@@ -192,7 +192,7 @@ wire [1:0] ar = status[20:19];
 assign VIDEO_ARX = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd4 : 8'd3) : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd3 : 8'd4) : 12'd0;
 
-`include "build_id.v" 
+`include "build_id.v"
 localparam CONF_STR = {
 	"A.DKONG;;",
 	"H0OJK,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
@@ -216,7 +216,7 @@ localparam CONF_STR = {
 
 ////////////////////   CLOCKS   ///////////////////
 
-wire clk_sys,clk_49;
+wire clk_sys,clk_49,clk_audio;
 wire pll_locked;
 
 pll pll
@@ -225,6 +225,7 @@ pll pll
 	.rst(0),
 	.outclk_0(clk_49),
 	.outclk_1(clk_sys),
+	.outclk_2(clk_audio),
 	.locked(pll_locked)
 );
 
@@ -291,7 +292,7 @@ reg mod_pestplace=0;
 always @(posedge clk_sys) begin
 	reg [7:0] mod = 0;
 	if (ioctl_wr & (ioctl_index==1)) mod <= ioctl_dout;
-	
+
 	mod_dk <= (mod == 0);
 	mod_dkjr <= (mod == 1);
 	mod_dk3 <= (mod == 2);
@@ -407,7 +408,7 @@ dpram #(15,8) cpu_rom (
 	.data_b(ioctl_dout)
 	);
 dpram #(12,8) snd_rom (
-	.clock_a(clk_sys),
+	.clock_a(clk_audio),
 	.address_a(sub_rom_a[11:0]),
 	.q_a(sub_rom_do),
 
@@ -417,7 +418,7 @@ dpram #(12,8) snd_rom (
 	.data_b(ioctl_dout)
 	);
 dpram #(16,8) wav_rom (
-	.clock_a(clk_sys),
+	.clock_a(clk_audio),
 	.address_a(wav_rom_a[15:0]),
 	.q_a(wav_rom_do),
 
@@ -431,15 +432,16 @@ dpram #(16,8) wav_rom (
 
 
 
-dkong_top dkong(				   
+dkong_top dkong(
 	.I_CLK_24576M(clk_sys),
+	.I_CLK_24M(clk_audio),
 	.I_RESETn(~reset),
 	.I_U1(~m_up),
 	.I_D1(~m_down),
 	.I_L1(~m_left),
 	.I_R1(~m_right),
 	.I_J1(~m_fire),
-	
+
 	.I_U2(~m_up_2),
 	.I_D2(~m_down_2),
 	.I_L2(~m_left_2),

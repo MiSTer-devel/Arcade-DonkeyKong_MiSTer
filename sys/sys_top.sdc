@@ -2,7 +2,7 @@
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK1_50]
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK2_50]
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK3_50]
-create_clock -period "100.0 MHz" [get_pins -compatibility_mode *|h2f_user0_clk] 
+create_clock -period "100.0 MHz" [get_pins -compatibility_mode *|h2f_user0_clk]
 create_clock -period "100.0 MHz" [get_pins -compatibility_mode spi|sclk_out] -name spi_sck
 create_clock -period "10.0 MHz"  [get_pins -compatibility_mode hdmi_i2c|out_clk] -name hdmi_sck
 
@@ -69,3 +69,8 @@ set_false_path -from {ascal|o_hsstart* ascal|o_vsstart* ascal|o_hsend* ascal|o_v
 set_false_path -from {ascal|o_hsize* ascal|o_vsize*}
 
 set_false_path -from {mcp23009|sd_cd}
+
+# this complete de-coupling of clock domains is maybe too general, is is mainly about configuration bits and
+# sound enble signals:
+set_false_path -rise_from {emu|pll|pll_inst|altera_pll_i|general[1]*} -rise_to {emu|pll|pll_inst|altera_pll_i|general[2]*}
+set_false_path -from  {emu|dkong|dkong_soundboard|SOUND_CPU|t48_core|t48_p2:\use_p2:p2_b|p2_o[4]}

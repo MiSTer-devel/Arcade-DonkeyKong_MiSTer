@@ -1,15 +1,16 @@
 module dkong_soundboard(
 	input         W_CLK_24576M,
-	input         W_RESETn,
-	input         I_DKJR,
+	input         W_CLK_24M,
+	input         W_RESETn, // TODO: check async
+	input         I_DKJR,   /// 1 = Emulate Donkey Kong JR, 3 or PestPlace (async not a problem)
 	input         W_W0_WE,
 	input         W_W1_WE,
 	input         W_CNF_EN,
-	input   [6:0] W_6H_Q,
+	input   [6:0] W_6H_Q,  // TODO: check async
 	input         W_5H_Q0,
 	input   [1:0] W_4H_Q,
 	input   [4:0] W_3D_Q,
-	output [15:0] O_SOUND_DAT,
+	output reg [15:0] O_SOUND_DAT,
 	output        O_SACK,
 	output [11:0] ROM_A,
 	input   [7:0] ROM_D,
@@ -33,15 +34,16 @@ wire    I8035_T0;
 wire    I8035_T1;
 wire    I8035_RSTn;
 
+// emulate 6 MHz crystal oscillor
 reg [1:0] cnt;
-always @(posedge W_CLK_24576M) begin
+always @(posedge W_CLK_24M) begin
 	cnt <= cnt + 1'd1;
 	I8035_CLK_EN <= cnt == 0;
 end
 
 I8035IP SOUND_CPU
 (
-	.I_CLK(W_CLK_24576M),
+	.I_CLK(W_CLK_24M),
 	.I_CLK_EN(I8035_CLK_EN),
 	.I_RSTn(I8035_RSTn),
 	.I_INTn(I8035_INTn),
@@ -61,19 +63,19 @@ I8035IP SOUND_CPU
 	.I_P2(I8035_PBO),
 	.O_P2(I8035_PBI)
 );
-assign O_SACK = I8035_PBI[4];
+assign O_SACK = I8035_PBI[4]; // TODO: check async.
 //-------------------------------------------------
 
 dkong_sound Digtal_sound
 (
-	.I_CLK(W_CLK_24576M),
+	.I_CLK(W_CLK_24M),
 	.I_RST(W_RESETn),
 	.I_DKJR(I_DKJR),
 	.I8035_DBI(I8035_DBI),
 	.I8035_DBO(I8035_DBO),
 	.I8035_PAI(I8035_PAI),
 	.I8035_PBI(I8035_PBI),
-	.I8035_PBO(I8035_PBO), 
+	.I8035_PBO(I8035_PBO),
 	.I8035_ALE(I8035_ALE),
 	.I8035_RDn(I8035_RDn),
 	.I8035_PSENn(I8035_PSENn),
@@ -88,41 +90,60 @@ dkong_sound Digtal_sound
 	.ROM_D(ROM_D)
 );
 
-dkong_wav_sound Analog_sound
-(
-	.O_ROM_AB(WAV_ROM_A),
-	.I_ROM_DB(WAV_ROM_DO),
+//----    DAC  I/F     ------------------------
 
-	.I_CLK(W_CLK_24576M),
+localparam CLOCK_RATE = 24000000;
+localparam SAMPLE_RATE = 48000;
+localparam [8:0] clocks_per_sample = 24000000 / 48000;
+
+// Wav sound recored at 11025 Hz rate, 8 bit unsigned
+dkong_wav_sound #(
+	.CLOCK_RATE(CLOCK_RATE)
+) Analog_sound (
+	.I_CLK(W_CLK_24M),
 	.I_RSTn(W_RESETn),
-	.I_SW(I_DKJR ? 2'b00 : W_6H_Q[2:1])
+	.I_SW(I_DKJR ? 2'b00 : W_6H_Q[2:1]),
+	.O_ROM_AB(WAV_ROM_A)
 );
 
 reg[8:0] audio_clk_counter;
-wire audio_clk_en;
-assign audio_clk_en = audio_clk_counter == 0;
-wire signed[15:0] walk_out;
-
-always@(posedge W_CLK_24576M, negedge W_RESETn) begin
+reg audio_clk_en;
+always@(posedge W_CLK_24M, negedge W_RESETn) begin
 	if(!W_RESETn)begin
+		audio_clk_en <= 0;
 		audio_clk_counter <= 0;
 	end else begin
-		audio_clk_counter <= audio_clk_counter + 1;
+		if(audio_clk_counter != (clocks_per_sample - 9'd1))begin
+			audio_clk_en <= 0;
+			audio_clk_counter <= audio_clk_counter + 9'd1;
+		end else begin
+			audio_clk_en <= 1;
+			audio_clk_counter <= 0;
+		end
 	end
 end
 
-dk_walk #(.CLOCK_RATE(24576000),.SAMPLE_RATE(48000)) walk (
-	.clk(W_CLK_24576M),
+wire signed[15:0] walk_out;
+dk_walk #(.CLOCK_RATE(CLOCK_RATE),.SAMPLE_RATE(SAMPLE_RATE)) walk (
+	.clk(W_CLK_24M),
 	.I_RSTn(W_RESETn),
 	.audio_clk_en(audio_clk_en),
 	.walk_en(~W_6H_Q[0]),
 	.out(walk_out)
 );
 
+// All this is async, that is a bit tricky:
 //  SOUND MIXER (WAV + DIG ) -----------------------
 wire[14:0] sound_mix = ({1'b0, I_DKJR ? 15'd0 : WAV_ROM_DO, 6'b0} + {1'b0, (W_D_S_DAT >> 1) + (W_D_S_DAT >> 3), 6'b0});
 wire signed[15:0] sound_mix_16_bit = sound_mix - 2**14 + walk_out;
 
-assign O_SOUND_DAT = sound_mix_16_bit + 2**15;
+
+always@(posedge W_CLK_24M) begin
+	// There is small, but not negligble chance that this will not
+	// synchronize with the audio out enable.
+	if (audio_clk_en) begin
+		O_SOUND_DAT <= sound_mix;
+	end
+end
 
 endmodule
