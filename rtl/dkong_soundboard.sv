@@ -96,6 +96,33 @@ localparam CLOCK_RATE = 24000000;
 localparam SAMPLE_RATE = 48000;
 localparam [8:0] clocks_per_sample = 24000000 / 48000;
 
+wire signed[15:0] W_D_S_DATB;
+
+dkongjr_dac dac08
+(
+	.I_CLK(W_CLK_24M),
+	.I_DECAY_EN(~I8035_PBI[7]),
+	.I_RESET_n(W_RESETn),
+	.I_SND_DAT({2{~W_D_S_DAT[7],W_D_S_DAT[6:0]}}), // convert 8-bit unsigned to 16-bit signed.
+	.O_SND_DAT(W_D_S_DATB)
+);
+
+// Second order low pass filter. f= 1916 Hz, Q = 0.74.
+wire signed[15:0] W_D_S_DATC;
+iir_2nd_order filter
+(
+	.clk(W_CLK_24M),
+	.reset(~W_RESETn),
+	.div({3'd0, clocks_per_sample}),
+	.A2(-18'sd26649),
+	.A3(18'sd11453),
+	.B1(18'sd215),
+	.B2(18'sd430),
+	.B3(18'sd215),
+   .in(W_D_S_DATB),
+	.out(W_D_S_DATC)
+);
+
 // Wav sound recored at 11025 Hz rate, 8 bit unsigned
 dkong_wav_sound #(
 	.CLOCK_RATE(CLOCK_RATE)
@@ -132,11 +159,12 @@ dk_walk #(.CLOCK_RATE(CLOCK_RATE),.SAMPLE_RATE(SAMPLE_RATE)) walk (
 	.out(walk_out)
 );
 
-// All this is async, that is a bit tricky:
 //  SOUND MIXER (WAV + DIG ) -----------------------
-wire[14:0] sound_mix = ({1'b0, I_DKJR ? 15'd0 : WAV_ROM_DO, 6'b0} + {1'b0, (W_D_S_DAT >> 1) + (W_D_S_DAT >> 3), 6'b0});
-wire signed[15:0] sound_mix_16_bit = sound_mix - 2**14 + walk_out;
 
+wire signed[15:0] sound_mix =
+	(I_DKJR ? 16'd0 : {{3{~WAV_ROM_DO[7]}}, WAV_ROM_DO[6:0],6'b0}) +
+	{{3{W_D_S_DATC[15]}},W_D_S_DATC[14:2]} + {{5{W_D_S_DATC[15]}},W_D_S_DATC[14:4]} +
+	walk_out;
 
 always@(posedge W_CLK_24M) begin
 	// There is small, but not negligble chance that this will not

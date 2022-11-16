@@ -367,7 +367,7 @@ arcade_video #(256,12) arcade_video
 wire [15:0] audio;
 assign AUDIO_L = audio;
 assign AUDIO_R = AUDIO_L;
-assign AUDIO_S = 0;
+assign AUDIO_S = 1;
 
 assign hblank = hbl[8];
 
