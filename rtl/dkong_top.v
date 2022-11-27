@@ -567,7 +567,6 @@ dkong_col_pal cpal
 
 dkong_soundboard dkong_soundboard(
 	.W_CLK_24576M(W_CLK_24576M & ~paused),
-	.W_CLK_24M(I_CLK_24M & ~paused),
 	.W_RESETn(W_RESETn),
 	.I_DKJR(I_DKJR),
 	.O_SOUND_DAT(O_SOUND_DAT),

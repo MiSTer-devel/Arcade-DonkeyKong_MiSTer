@@ -216,7 +216,7 @@ localparam CONF_STR = {
 
 ////////////////////   CLOCKS   ///////////////////
 
-wire clk_sys,clk_49,clk_audio;
+wire clk_sys,clk_49;
 wire pll_locked;
 
 pll pll
@@ -225,7 +225,6 @@ pll pll
 	.rst(0),
 	.outclk_0(clk_49),
 	.outclk_1(clk_sys),
-	.outclk_2(clk_audio),
 	.locked(pll_locked)
 );
 
@@ -408,7 +407,7 @@ dpram #(15,8) cpu_rom (
 	.data_b(ioctl_dout)
 	);
 dpram #(12,8) snd_rom (
-	.clock_a(clk_audio),
+	.clock_a(clk_sys),
 	.address_a(sub_rom_a[11:0]),
 	.q_a(sub_rom_do),
 
@@ -418,7 +417,7 @@ dpram #(12,8) snd_rom (
 	.data_b(ioctl_dout)
 	);
 dpram #(16,8) wav_rom (
-	.clock_a(clk_audio),
+	.clock_a(clk_sys),
 	.address_a(wav_rom_a[15:0]),
 	.q_a(wav_rom_do),
 
@@ -434,7 +433,6 @@ dpram #(16,8) wav_rom (
 
 dkong_top dkong(
 	.I_CLK_24576M(clk_sys),
-	.I_CLK_24M(clk_audio),
 	.I_RESETn(~reset),
 	.I_U1(~m_up),
 	.I_D1(~m_down),
