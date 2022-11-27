@@ -26,7 +26,6 @@ module dkong_top
 (
 	//    FPGA_USE
 	input  I_CLK_24576M,
-	input  I_CLK_24M,
 	input  I_RESETn,
 	output O_PIX,
 
