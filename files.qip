@@ -2,7 +2,7 @@ set_global_assignment -name VERILOG_FILE rtl/dkong_top.v
 set_global_assignment -name VERILOG_FILE rtl/dkong_dma.v
 set_global_assignment -name VHDL_FILE rtl/dpram.vhd
 set_global_assignment -name VERILOG_FILE rtl/i8035ip.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_wav_sound.v
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/dkong_wav_sound.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/dkong_soundboard.sv
 set_global_assignment -name VERILOG_FILE rtl/dkong_vram.v
 set_global_assignment -name VERILOG_FILE rtl/dkong_sound.v

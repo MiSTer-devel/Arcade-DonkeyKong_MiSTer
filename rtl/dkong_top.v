@@ -128,7 +128,7 @@ wire   W_SW2_OEn ;
 wire   W_SW3_OEn ;
 wire   W_DIP_OEn ;
 
-wire   [2:0]W_4H_Q;
+wire   [1:0]W_4H_Q;
 wire   [7:0]W_5H_Q;
 wire   [7:0]W_6H_Q;
 wire   [4:0]W_3D_Q;
