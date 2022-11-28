@@ -169,13 +169,17 @@ dk_walk #(
 
 //  SOUND MIXER (WAV + DIG ) -----------------------
 
-wire signed[15:0] sound_mix =
-	(I_DKJR ? 16'd0 : {{3{~WAV_ROM_DO[7]}}, WAV_ROM_DO[6:0],6'b0}) +
-	{{3{W_D_S_DATC[15]}},W_D_S_DATC[14:2]} + {{5{W_D_S_DATC[15]}},W_D_S_DATC[14:4]} +
-	walk_out;
+wire signed[16:0] sound_mix =
+	(I_DKJR ? 17'd0 : {{4{~WAV_ROM_DO[7]}}, WAV_ROM_DO[6:0],6'b0}) +
+	{{4{W_D_S_DATC[15]}},W_D_S_DATC[14:2]} + {{6{W_D_S_DATC[15]}},W_D_S_DATC[14:4]} +
+	{{2{walk_out[15]}},walk_out[14:0]};
+
 
 always@(posedge W_CLK_24576M) begin
-	O_SOUND_DAT <= sound_mix;
+	O_SOUND_DAT <=
+		sound_mix[16:15] == 2'b01 ? 16'h7FFF :
+		sound_mix[16:15] == 2'b10 ? 16'h8000 :
+		sound_mix[15:0];
 end
 
 endmodule
