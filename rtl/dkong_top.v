@@ -20,6 +20,23 @@
 // 2005- 2- 9 Data on the ROM are initialized at the time of the start.
 //            added device.
 //            changed module I/O.
+//
+// This description is largely based on the TKG4 schematics, with some extensions
+// to support Radarscope and Donkey Kong Jr (although MiSter currently has a separate DKJR core).
+//
+// In the schematics, ICs are denoted by their position on the board, i.e. IC 6M
+// is the IC in column 6, row M. Unfortunataly, this makes reverse lookup from
+// Verilog to schematic hard, but at least ICs with similar coordinates are often cloase
+// together in the schematic too.
+// In the Verilog description, signals were orignally named by the source IC and pin
+// name. Later changes did not always follow this convention.
+// This naming can be confusing, because is not always unique:
+// e.g. IC 4H occurs both on the VIDEO and CPU board.
+//
+// Contrary to Radarscope and TGK2, the TKG4 does not really have a sound board,
+// so even in that code, numbering and naming of the TKG4 CPU board is largely
+// followed.
+//
 //================================================================================
 
 module dkong_top
