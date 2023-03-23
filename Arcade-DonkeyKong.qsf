@@ -13,10 +13,11 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 
-set_global_assignment -name LAST_QUARTUS_VERSION "17.0.2 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "17.0.2 Standard Edition"
 
 set_global_assignment -name GENERATE_RBF_FILE ON
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
 set_global_assignment -name SAVE_DISK_SPACE OFF
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP "-40"
@@ -46,7 +47,7 @@ set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
 set_global_assignment -name ECO_OPTIMIZE_TIMING ON
 set_global_assignment -name PERIPHERY_TO_CORE_PLACEMENT_AND_ROUTING_OPTIMIZATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
-set_global_assignment -name ALM_REGISTER_PACKING_EFFORT LOW
+set_global_assignment -name ALM_REGISTER_PACKING_EFFORT MEDIUM
 set_global_assignment -name SEED 1
 
 set_global_assignment -name VERILOG_MACRO "MISTER_FB=1"
@@ -63,36 +64,4 @@ source sys/sys.tcl
 source sys/sys_analog.tcl
 source files.qip
 set_global_assignment -name FLOW_ENABLE_RTL_VIEWER OFF
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/Log2highacc.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/natural_log.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/LFSR.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistive_two_way_mixer.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/astable_555_vco.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistor_capacitor_low_pass_filter.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistor_capacitor_high_pass_filter.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/rate_of_change_limiter.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/invertor_square_wave_oscilator.sv"
-set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/dk_walk.sv"
-set_global_assignment -name CDF_FILE jtag.cdf
-set_global_assignment -name QIP_FILE sys/sys.qip
-set_global_assignment -name VERILOG_FILE rtl/dkong_top.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_dma.v
-set_global_assignment -name VHDL_FILE rtl/dpram.vhd
-set_global_assignment -name VERILOG_FILE rtl/i8035ip.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_wav_sound.v
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/dkong_soundboard.sv
-set_global_assignment -name VERILOG_FILE rtl/dkong_vram.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_sound.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_obj.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_logic.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_hv_count.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_col_pal.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_bram.v
-set_global_assignment -name VERILOG_FILE rtl/dkong_adec.v
-set_global_assignment -name VERILOG_FILE rtl/radarscp_stars.v
-set_global_assignment -name QIP_FILE rtl/t48/T48.qip
-set_global_assignment -name QIP_FILE rtl/T80/T80.qip
-set_global_assignment -name VERILOG_FILE rtl/pause.v
-set_global_assignment -name VERILOG_FILE rtl/hiscore.v
-set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-DonkeyKong.sv"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -30,16 +30,16 @@ module dkong_wav_sound #(
 localparam WAV_SAMPLE_RATE = 11025; // Hz
 localparam Sample_cnt = CLOCK_RATE / WAV_SAMPLE_RATE;
 
-parameter Wlk1_adr = 16'h0000; // 10000 - 107FF
-parameter Wlk1_cnt = 16'h07d0; // 10000 - 107CF
-parameter Wlk2_adr = 16'h0800; // 10800 - 10FFF
-parameter Wlk2_cnt = 16'h07d0; // 10800 - 10FCF
-parameter Jump_adr = 16'h1000; // 11000 - 12FFF
-parameter Jump_cnt = 16'h1e20; // 11000 - 12E1F
-parameter Foot_adr = 16'h3000; // 13000 - 14FFF
-parameter Foot_cnt = 16'h1750; // 13000 - 1474F
-parameter Wlk3_adr = 16'h4800; // 14800 - 14FFF
-parameter Wlk3_cnt = 16'h07d0; // 14800 - 14FCF
+localparam Wlk1_adr = 16'h0000; // 10000 - 107FF
+localparam Wlk1_cnt = 16'h07d0; // 10000 - 107CF
+localparam Wlk2_adr = 16'h0800; // 10800 - 10FFF
+localparam Wlk2_cnt = 16'h07d0; // 10800 - 10FCF
+localparam Jump_adr = 16'h1000; // 11000 - 12FFF
+localparam Jump_cnt = 16'h1e20; // 11000 - 12E1F
+localparam Foot_adr = 16'h3000; // 13000 - 14FFF
+localparam Foot_cnt = 16'h1750; // 13000 - 1474F
+localparam Wlk3_adr = 16'h4800; // 14800 - 14FFF
+localparam Wlk3_cnt = 16'h07d0; // 14800 - 14FCF
 // Contrary to comment in header, the Gorilla roar sound is still in the mra file:
 // parameter Roar_adr = 16'h5000; // 15000 - 198FF
 // parameter Roar_cnt = 16'h4900; // 15000 - 198FF

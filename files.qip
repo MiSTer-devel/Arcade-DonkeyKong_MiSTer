@@ -14,6 +14,16 @@ set_global_assignment -name VERILOG_FILE rtl/dkong_bram.v
 set_global_assignment -name VERILOG_FILE rtl/dkong_adec.v
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/dkongjr_dac.sv
 set_global_assignment -name VERILOG_FILE rtl/dkongjr_iir_filter.v
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/Log2highacc.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/natural_log.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/LFSR.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistive_two_way_mixer.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/astable_555_vco.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistor_capacitor_low_pass_filter.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/resistor_capacitor_high_pass_filter.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/rate_of_change_limiter.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/invertor_square_wave_oscilator.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "rtl/mister-discrete/dk_walk.sv"
 set_global_assignment -name VERILOG_FILE rtl/radarscp_stars.v
 set_global_assignment -name QIP_FILE rtl/t48/T48.qip
 set_global_assignment -name QIP_FILE rtl/T80/T80.qip

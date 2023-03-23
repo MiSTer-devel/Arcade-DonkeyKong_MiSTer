@@ -284,7 +284,7 @@ reg [7:0] sw[8];
 always @(posedge clk_sys) if (ioctl_wr && (ioctl_index==254) && !ioctl_addr[24:3]) sw[ioctl_addr[2:0]] <= ioctl_dout;
 
 // Core specific mods
-reg mod_dk = 0;
+//reg mod_dk = 0;
 reg mod_dkjr = 0;
 reg mod_dk3 = 0;
 reg mod_radarscope=0;
@@ -295,7 +295,7 @@ always @(posedge clk_sys) begin
 	reg [7:0] mod = 0;
 	if (ioctl_wr & (ioctl_index==1)) mod <= ioctl_dout;
 
-	mod_dk <= (mod == 0);
+	//mod_dk <= (mod == 0);
 	mod_dkjr <= (mod == 1);
 	mod_dk3 <= (mod == 2);
 	mod_radarscope <= (mod == 3);
@@ -339,10 +339,10 @@ wire [3:0] r,g,b;
 
 reg ce_pix;
 always @(posedge clk_49) begin
-        reg [2:0] div;
+	reg [2:0] div;
 
-        div <= div + 1'd1;
-        ce_pix <= !div;
+	div <= div + 1'd1;
+	ce_pix <= !div;
 end
 
 wire no_rotate = status[2] | direct_video | mod_pestplace;
@@ -375,22 +375,21 @@ assign AUDIO_S = 1;
 
 assign hblank = hbl[8];
 
-reg  ce_vid;
+//reg  ce_vid;
 wire clk_pix;
 wire hbl0;
 reg [8:0] hbl;
 always @(posedge clk_sys) begin
 	reg old_pix;
 	old_pix <= clk_pix;
-	ce_vid <= 0;
+	//ce_vid <= 0;
 	if(~old_pix & clk_pix) begin
-		ce_vid <= 1;
+		//ce_vid <= 1;
 		hbl <= (hbl<<1)|hbl0;
 	end
 end
 
 wire reset = RESET | status[0] | buttons[1]| ioctl_download;
-
 
 
 wire [15:0] main_rom_a;
