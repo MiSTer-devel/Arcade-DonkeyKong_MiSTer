@@ -7,7 +7,7 @@
 //
 // Important !
 //
-// This program is freeware for non-commercial use. 
+// This program is freeware for non-commercial use.
 // An author does no guarantee about this program.
 // You can use this under your own risk.
 //
@@ -26,6 +26,7 @@ module dkong_top
 (
 	//    FPGA_USE
 	input  I_CLK_24576M,
+	input  I_CLK_24M,
 	input  I_RESETn,
 	output O_PIX,
 
@@ -144,7 +145,7 @@ wire   W_CPU_IORQn;
 wire   W_CPU_MREQn;
 wire   W_CPU_BUSRQ;
 wire   W_CPU_BUSAKn;
-wire   W_CPU_RDn;  
+wire   W_CPU_RDn;
 wire   W_CPU_WRn;
 wire   [15:0]W_CPU_A;
 
@@ -153,7 +154,7 @@ assign WB_CLK_12288M = W_CLK_12288M; // 12.288MHz
 wire   W_CPU_CLK_EN_P = W_H_CNT[1:0] == 2'b01;
 wire   W_CPU_CLK_EN_N = W_H_CNT[1:0] == 2'b11;
 
- T80pa z80core(
+T80pa z80core(
 	.RESET_n(W_RESETn),
 	.CLK(I_CLK_24576M),
 	.CEN_p(W_CPU_CLK_EN_N),
@@ -195,7 +196,7 @@ prog ROM(
 
 always @(*) begin
 	case({!I_DKJR, W_CPU_A[15:11]})
-		6'h02: MAIN_CPU_A = {5'h06,W_CPU_A[10:0]}; // 0x1000-0x17FF -> 0x3000-0x37FF in ROM file 
+		6'h02: MAIN_CPU_A = {5'h06,W_CPU_A[10:0]}; // 0x1000-0x17FF -> 0x3000-0x37FF in ROM file
 		6'h03: MAIN_CPU_A = {5'h0B,W_CPU_A[10:0]}; // 0x1800-0x1FFF -> 0x5800-0x5FFF in ROM file
 		6'h05: MAIN_CPU_A = {5'h09,W_CPU_A[10:0]}; // 0x2800-0x2FFF -> 0x4800-0x4FFF in ROM file
 		6'h06: MAIN_CPU_A = {5'h02,W_CPU_A[10:0]}; // 0x3000-0x37FF -> 0x1000-0x17FF in ROM file
@@ -370,7 +371,7 @@ dkong_adec adec
 	.I_DK3B(I_DK3B),
 	.I_PESTPLCE(I_PESTPLCE),
 	.I_AB(W_CPU_A),
-	.I_DB(WI_D), 
+	.I_DB(WI_D),
 	.I_MREQ_n(W_CPU_MREQn),
 	.I_RFSH_n(W_CPU_RFSHn),
 	.I_RD_n(W_CPU_RDn),
@@ -497,7 +498,7 @@ dkong_vram vram
 	.DL_ADDR(DL_ADDR),
 	.DL_WR(DL_WR),
 	.DL_DATA(DL_DATA),
-	
+
 	.hs_address(hs_address),
 	.hs_data_in(hs_data_in),
 	.hs_data_out(hs_data_out_VRAM),
@@ -579,5 +580,5 @@ dkong_soundboard dkong_soundboard(
 	.WAV_ROM_A(WAV_ROM_A),
 	.WAV_ROM_DO(WAV_ROM_DO)
 	);
-	
+
 endmodule

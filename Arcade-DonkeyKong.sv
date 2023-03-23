@@ -194,7 +194,7 @@ wire [1:0] ar = status[20:19];
 assign VIDEO_ARX = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd8 : 8'd7) : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd7 : 8'd8) : 12'd0;
 
-`include "build_id.v" 
+`include "build_id.v"
 localparam CONF_STR = {
 	"A.DKONG;;",
 	"H0OJK,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
@@ -294,7 +294,7 @@ reg mod_pestplace=0;
 always @(posedge clk_sys) begin
 	reg [7:0] mod = 0;
 	if (ioctl_wr & (ioctl_index==1)) mod <= ioctl_dout;
-	
+
 	mod_dk <= (mod == 0);
 	mod_dkjr <= (mod == 1);
 	mod_dk3 <= (mod == 2);
@@ -371,7 +371,7 @@ arcade_video #(256,12) arcade_video
 wire [15:0] audio;
 assign AUDIO_L = audio;
 assign AUDIO_R = AUDIO_L;
-assign AUDIO_S = 0;
+assign AUDIO_S = 1;
 
 assign hblank = hbl[8];
 
@@ -436,7 +436,7 @@ dpram #(16,8) wav_rom (
 
 
 
-dkong_top dkong(				   
+dkong_top dkong(
 	.I_CLK_24576M(clk_sys),
 	.I_RESETn(~reset),
 	.I_U1(~m_up),
@@ -444,7 +444,7 @@ dkong_top dkong(
 	.I_L1(~m_left),
 	.I_R1(~m_right),
 	.I_J1(~m_fire),
-	
+
 	.I_U2(~m_up_2),
 	.I_D2(~m_down_2),
 	.I_L2(~m_left_2),
