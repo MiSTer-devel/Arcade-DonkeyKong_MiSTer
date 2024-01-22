@@ -3,6 +3,7 @@ module dkong_soundboard #(
 ) (
 	input         W_CLK_24576M,
 	input         W_RESETn,
+	input         use_emulated_sfx,
 	input         I_DKJR,   /// 1 = Emulate Donkey Kong JR, 3 or PestPlace (async not a problem)
 	input         W_W0_WE,
 	input         W_W1_WE,
@@ -134,7 +135,7 @@ dkong_wav_sound #(
 ) Analog_sound (
 	.I_CLK(W_CLK_24576M),
 	.I_RSTn(W_RESETn),
-	.I_SW(I_DKJR ? 2'b00 : W_6H_Q[2:1]),
+	.I_SW(I_DKJR ? 3'b00 : {W_6H_Q[2:1],W_6H_Q[0] | use_emulated_sfx}),
 	.O_ROM_AB(WAV_ROM_A)
 );
 
@@ -163,7 +164,7 @@ dk_walk #(
 	.clk(W_CLK_24576M),
 	.I_RSTn(W_RESETn),
 	.audio_clk_en(audio_clk_en),
-	.walk_en(~W_6H_Q[0]),
+	.walk_en(~W_6H_Q[0] & use_emulated_sfx),
 	.out(walk_out)
 );
 

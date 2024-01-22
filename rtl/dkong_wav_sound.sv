@@ -22,7 +22,7 @@ module dkong_wav_sound #(
 )(
   input I_CLK,
   input I_RSTn,
-  input [2:1]I_SW,
+  input [2:0]I_SW,
 
   output [18:0] O_ROM_AB
 );
@@ -69,8 +69,10 @@ reg    [15:0]end_cnt;
 reg    [1:0]steps_cnt;
 reg    old_foot_rq;
 reg    old_jump_rq;
+reg    old_step_rq;
 wire   foot_rq = I_SW[2];
 wire   jump_rq = I_SW[1];
+wire   step_rq = I_SW[0];
 
 always@(posedge I_CLK or negedge I_RSTn)
 begin
@@ -83,7 +85,8 @@ begin
   end else begin
     status0[0] = ~old_foot_rq & foot_rq;
     old_foot_rq = foot_rq;
-	 status0[1] = 1'b0;
+	 status0[1] = ~old_step_rq & step_rq;
+	 old_step_rq = step_rq;
     status0[2] <= ~old_jump_rq & jump_rq;
     old_jump_rq = jump_rq;
     if(status0 > status1)begin

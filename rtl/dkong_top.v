@@ -59,6 +59,7 @@ module dkong_top
 
 	//    VGA (VIDEO) IF
 	input flip_screen,
+	input use_emulated_sfx,
 	input [8:0] H_OFFSET,
 	input [8:0] V_OFFSET,
 
@@ -584,6 +585,7 @@ dkong_col_pal cpal
 dkong_soundboard dkong_soundboard(
 	.W_CLK_24576M(W_CLK_24576M & ~paused),
 	.W_RESETn(W_RESETn),
+	.use_emulated_sfx(use_emulated_sfx),
 	.I_DKJR(I_DKJR),
 	.O_SOUND_DAT(O_SOUND_DAT),
 	.O_SACK(W_SACK),

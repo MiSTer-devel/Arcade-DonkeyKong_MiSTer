@@ -194,6 +194,13 @@ wire [1:0] ar = status[20:19];
 assign VIDEO_ARX = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd8 : 8'd7) : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? ((status[2]|mod_pestplace)  ? 8'd7 : 8'd8) : 12'd0;
 
+// Status Bit Map:
+//             Upper                             Lower
+// 0         1         2         3          4         5         6
+// 01234567890123456789012345678901 23456789012345678901234567890123
+// 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
+// XXXXXX X           XXXXXXXXXXXXX
+
 `include "build_id.v"
 localparam CONF_STR = {
 	"A.DKONG;;",
@@ -202,7 +209,8 @@ localparam CONF_STR = {
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"H1O7,Flip Screen,Off,On;",
 	"OOS,Analog Video H-Pos,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;",
-        "OTV,Analog Video V-Pos,0,1,2,3,4,5,6,7;",
+	"OTV,Analog Video V-Pos,0,1,2,3,4,5,6,7;",
+	"O6,Sound Effects,Sampled,Emulated;",
 	"H2ON,Autosave Hiscores,Off,On;",
 	"P1,Pause options;",
 	"P1OL,Pause when OSD is open,On,Off;",
@@ -464,6 +472,7 @@ dkong_top dkong(
 	.O_PIX(clk_pix),
 
 	.flip_screen(status[7]),
+	.use_emulated_sfx(status[6]),
 	.H_OFFSET(status[28:24]),
 	.V_OFFSET(status[31:29]),
 
