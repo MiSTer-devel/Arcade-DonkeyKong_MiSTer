@@ -20,13 +20,29 @@
 // 2005- 2- 9 Data on the ROM are initialized at the time of the start.
 //            added device.
 //            changed module I/O.
+//
+// This description is largely based on the TKG4 schematics, with some extensions
+// to support Radarscope and Donkey Kong Jr (although MiSter currently has a separate DKJR core).
+//
+// In the schematics, ICs are denoted by their position on the board, i.e. IC 6M
+// is the IC in column 6, row M. Unfortunataly, this makes reverse lookup from
+// Verilog to schematic hard, but at least ICs with similar coordinates are often cloase
+// together in the schematic too.
+// In the Verilog description, signals were orignally named by the source IC and pin
+// name. Later changes did not always follow this convention.
+// This naming can be confusing, because is not always unique:
+// e.g. IC 4H occurs both on the VIDEO and CPU board.
+//
+// Contrary to Radarscope and TGK2, the TKG4 does not really have a sound board,
+// so even in that code, numbering and naming of the TKG4 CPU board is largely
+// followed.
+//
 //================================================================================
 
 module dkong_top
 (
 	//    FPGA_USE
 	input  I_CLK_24576M,
-	input  I_CLK_24M,
 	input  I_RESETn,
 	output O_PIX,
 
@@ -43,6 +59,7 @@ module dkong_top
 
 	//    VGA (VIDEO) IF
 	input flip_screen,
+	input use_emulated_sfx,
 	input [8:0] H_OFFSET,
 	input [8:0] V_OFFSET,
 
@@ -112,7 +129,7 @@ wire   W_SW2_OEn ;
 wire   W_SW3_OEn ;
 wire   W_DIP_OEn ;
 
-wire   [2:0]W_4H_Q;
+wire   [1:0]W_4H_Q;
 wire   [7:0]W_5H_Q;
 wire   [7:0]W_6H_Q;
 wire   [4:0]W_3D_Q;
@@ -568,6 +585,7 @@ dkong_col_pal cpal
 dkong_soundboard dkong_soundboard(
 	.W_CLK_24576M(W_CLK_24576M & ~paused),
 	.W_RESETn(W_RESETn),
+	.use_emulated_sfx(use_emulated_sfx),
 	.I_DKJR(I_DKJR),
 	.O_SOUND_DAT(O_SOUND_DAT),
 	.O_SACK(W_SACK),
