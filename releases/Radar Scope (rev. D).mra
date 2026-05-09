@@ -30,7 +30,7 @@
 	<switches base="8" default="80">
 		<dip bits="0,1" ids="3,4,5,6" name="Lives"></dip>
 		<dip bits="2,3" ids="7K,10K,15K,20K" name="Bonus Life"></dip>
-		<dip bits="4,6" ids="1C1P,2C1P,1C1P,3C1P,1C1P,4C1P,1C1P,5C1P,1C1P" name="Coins"></dip>
+		<dip bits="4,6" ids="1C1P,2C1P,1C2P,3C1P,1C3P,4C1P,1C4P,5C1P" name="Coins"></dip>
 		<dip bits="7" ids="Cocktail,Upright" name="Cabinet"></dip>
 	</switches>
 
